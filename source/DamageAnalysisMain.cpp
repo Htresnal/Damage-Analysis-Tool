@@ -151,7 +151,7 @@ DamageAnalysisFrame::DamageAnalysisFrame(wxWindow* parent,wxWindowID id)
     SetMaxSize(wxSize(700,510));
     {
     	wxIcon FrameIcon;
-    	FrameIcon.CopyFromBitmap(wxBitmap(wxImage(_T("D:\\cprojects\\DamageAnalysis\\myIcon.png"))));
+    	FrameIcon.CopyFromBitmap(wxBitmap(wxImage(_T("resources\\myIcon.png"))));
     	SetIcon(FrameIcon);
     }
     Notebook1 = new wxNotebook(this, ID_NOTEBOOK1, wxPoint(56,56), wxDefaultSize, wxNO_BORDER, _T("ID_NOTEBOOK1"));
@@ -943,10 +943,16 @@ void DamageAnalysisFrame::OnBATInputTextEnter(wxCommandEvent& event)
 
 void DamageAnalysisFrame::OnBATLostFocus(wxFocusEvent& event)
 {
-    if (wxIsEmpty(BATInput->GetValue()) || BATInput->GetValue().IsSameAs('0'))
+    if (wxIsEmpty(BATInput->GetValue()) || BATInput->GetValue().IsSameAs('0') || BATInput->GetValue().IsSameAs('-0'))
     {
         BATInput->SetValue("1.0");
     }
+    double tmpData=wxAtof(BATInput->GetValue());
+    if (tmpData<=0)
+    {
+        tmpData=1.0;
+    }
+    BATInput->SetValue(wxString::Format(wxT("%f"), tmpData));
     event.Skip();
 }
 
