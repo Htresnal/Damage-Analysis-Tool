@@ -2,7 +2,7 @@
 <wxsmith>
 	<object class="wxFrame" name="DamageAnalysisFrame">
 		<title>Damage analysis Tool v0.2</title>
-		<icon>D:\cprojects\DamageAnalysis\myIcon.png</icon>
+		<icon>resources\myIcon.png</icon>
 		<size>700,510</size>
 		<minsize>700,510</minsize>
 		<maxsize>700,510</maxsize>
@@ -82,7 +82,7 @@
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT5" variable="RegenText" member="yes">
 						<label>Regeneration</label>
-						<pos>168,72</pos>
+						<pos>166,72</pos>
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT4" variable="StatIntText" member="yes">
 						<label>INT</label>
@@ -114,7 +114,7 @@
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT6" variable="BaseAttackDamageText" member="yes">
 						<label>Base attack damage</label>
-						<pos>456,96</pos>
+						<pos>452,96</pos>
 					</object>
 					<object class="wxTextCtrl" name="ID_TEXTCTRL9" variable="BaseAttackDamageMinInput" member="yes">
 						<value>0</value>
@@ -134,11 +134,11 @@
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT7" variable="StaticText1" member="yes">
 						<label>-</label>
-						<pos>616,96</pos>
+						<pos>613,96</pos>
 					</object>
 					<object class="wxTextCtrl" name="ID_TEXTCTRL11" variable="WhiteDamageInput" member="yes">
 						<value>0</value>
-						<pos>483,120</pos>
+						<pos>478,120</pos>
 						<size>56,21</size>
 						<validator>numsOnlyValidator</validator>
 						<style>wxTE_PROCESS_ENTER</style>
@@ -146,11 +146,11 @@
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT10" variable="WhiteDamageText" member="yes">
 						<label>Damage</label>
-						<pos>440,120</pos>
+						<pos>432,120</pos>
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT11" variable="GreenDamageText" member="yes">
 						<label>Bonus damage</label>
-						<pos>544,120</pos>
+						<pos>535,120</pos>
 					</object>
 					<object class="wxTextCtrl" name="ID_TEXTCTRL12" variable="GreenDamageInput" member="yes">
 						<value>0</value>
@@ -162,11 +162,11 @@
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT12" variable="BATText" member="yes">
 						<label>Base attack speed</label>
-						<pos>424,144</pos>
+						<pos>416,144</pos>
 					</object>
 					<object class="wxTextCtrl" name="ID_TEXTCTRL13" variable="BATInput" member="yes">
 						<value>1.0</value>
-						<pos>516,144</pos>
+						<pos>512,144</pos>
 						<size>40,21</size>
 						<validator>numsFloatOnlyValidator</validator>
 						<style>wxTE_PROCESS_ENTER</style>
@@ -182,7 +182,7 @@
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT13" variable="AttackSpeedText" member="yes">
 						<label>Attack speed</label>
-						<pos>560,144</pos>
+						<pos>554,144</pos>
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT14" variable="MagicalResistanceText" member="yes">
 						<label>Magical Resistance</label>
@@ -190,7 +190,7 @@
 					</object>
 					<object class="wxTextCtrl" name="ID_TEXTCTRL15" variable="MagicResistanceInput" member="yes">
 						<value>0</value>
-						<pos>216,136</pos>
+						<pos>225,136</pos>
 						<size>48,21</size>
 						<validator>numsOnlyValidatorSigned</validator>
 						<style>wxTE_PROCESS_ENTER</style>
@@ -198,11 +198,11 @@
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT15" variable="StaticText2" member="yes">
 						<label>%</label>
-						<pos>272,136</pos>
+						<pos>274,136</pos>
 					</object>
 					<object class="wxTextCtrl" name="ID_TEXTCTRL16" variable="WithstandInput" member="yes">
 						<value>1</value>
-						<pos>312,280</pos>
+						<pos>305,280</pos>
 						<size>56,21</size>
 						<validator>numsOnlyValidator</validator>
 						<style>wxTE_PROCESS_ENTER</style>
@@ -210,15 +210,15 @@
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT16" variable="WithstandText" member="yes">
 						<label>Withstand</label>
-						<pos>316,264</pos>
+						<pos>308,264</pos>
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT17" variable="WithstandText2" member="yes">
 						<label>seconds</label>
-						<pos>320,300</pos>
+						<pos>312,300</pos>
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT18" variable="ArmorText" member="yes">
 						<label>Armor</label>
-						<pos>32,136</pos>
+						<pos>28,136</pos>
 					</object>
 					<object class="wxTextCtrl" name="ID_TEXTCTRL17" variable="ArmorInput" member="yes">
 						<value>0</value>
@@ -259,7 +259,7 @@
 					<object class="wxBitmapButton" name="ID_BITMAPBUTTON1" variable="aECBButtonAdd" member="yes">
 						<bitmap>resources\plus26.png</bitmap>
 						<selected>resources\plusd26.png</selected>
-						<pos>648,168</pos>
+						<pos>644,168</pos>
 						<size>28,28</size>
 						<tooltip>Add new effect</tooltip>
 						<style>wxBU_AUTODRAW|wxNO_BORDER|wxTRANSPARENT_WINDOW</style>
@@ -268,7 +268,7 @@
 					<object class="wxBitmapButton" name="ID_BITMAPBUTTON3" variable="dECBButtonAdd" member="yes">
 						<bitmap>resources\plus26.png</bitmap>
 						<selected>resources\plusd26.png</selected>
-						<pos>256,168</pos>
+						<pos>252,168</pos>
 						<size>28,28</size>
 						<tooltip>Add new effect</tooltip>
 						<style>wxBU_AUTODRAW|wxNO_BORDER|wxTRANSPARENT_WINDOW</style>
@@ -277,7 +277,7 @@
 					<object class="wxBitmapButton" name="ID_BITMAPBUTTON4" variable="dECBButtonRemove" member="yes">
 						<bitmap>resources\cross26.png</bitmap>
 						<selected>resources\crossd26.png</selected>
-						<pos>256,200</pos>
+						<pos>252,200</pos>
 						<size>28,28</size>
 						<tooltip>Remove selected effect</tooltip>
 						<style>wxBU_AUTODRAW|wxNO_BORDER|wxTRANSPARENT_WINDOW</style>
@@ -372,7 +372,7 @@
 					<object class="wxBitmapButton" name="ID_BITMAPBUTTON2" variable="aECBButtonRemove" member="yes">
 						<bitmap>resources\cross26.png</bitmap>
 						<selected>resources\crossd26.png</selected>
-						<pos>648,200</pos>
+						<pos>644,200</pos>
 						<size>28,28</size>
 						<tooltip>Remove selected effect</tooltip>
 						<style>wxBU_AUTODRAW|wxNO_BORDER|wxTRANSPARENT_WINDOW</style>
