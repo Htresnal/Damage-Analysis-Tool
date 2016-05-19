@@ -161,7 +161,7 @@
 						<handler function="OnGreenDamageInputTextEnter" entry="EVT_TEXT_ENTER" />
 					</object>
 					<object class="wxStaticText" name="ID_STATICTEXT12" variable="BATText" member="yes">
-						<label>Base attack speed</label>
+						<label>Base attack time</label>
 						<pos>416,144</pos>
 					</object>
 					<object class="wxTextCtrl" name="ID_TEXTCTRL13" variable="BATInput" member="yes">
