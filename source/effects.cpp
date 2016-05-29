@@ -63,6 +63,7 @@ extern hero_Attacker Attacker;
     {"effect_damage", new effect_damage},
     {"effect_damage_proc", new effect_damage_proc},
     {"effect_manaburn", new effect_manaburn},
+    {"effect_bonus_IAS", new effect_bonus_IAS},
     {"effect_increase_IAS", new effect_increase_IAS},
     {"effect_increase_damage", new effect_increase_damage},
     {"effect_critical_damage", new effect_critical_damage},
@@ -624,13 +625,13 @@ void effect_bonus_hpregen_armor_ph_master::Continue()
     }
     if (realStacks<oldStacks)
     {
-        Defender.armor=Defender.armor-armor*(oldStacks-realStacks);
-        Defender.HPRegen=Defender.HPRegen-hpregen*(oldStacks-realStacks);
+        Defender.armor=Defender.armor-(armor*(oldStacks-realStacks)*currSingleAttackTime);
+        Defender.HPRegen=Defender.HPRegen-(hpregen*(oldStacks-realStacks)*currSingleAttackTime);
     }
     else if (oldStacks<realStacks)
     {
-        Defender.armor=Defender.armor+armor*(realStacks-oldStacks);
-        Defender.HPRegen=Defender.HPRegen+hpregen*(realStacks-oldStacks);
+        Defender.armor=Defender.armor+(armor*(realStacks-oldStacks)*currSingleAttackTime);
+        Defender.HPRegen=Defender.HPRegen+(hpregen*(realStacks-oldStacks)*currSingleAttackTime);
     }
 return;
 }
@@ -1154,6 +1155,37 @@ void effect_manaburn::FillPropertiesGrid(effectsProperties *callBackEffBase)
     callBackEffBase->AppendDamageTypeSelector(damageType);
     callBackEffBase->AppendFullRow(manaString,mana);
     callBackEffBase->AppendFullRow(manaBurnString,manaBurn);
+    callBackEffBase->ptrtoItem=this;
+}
+
+// effect_bonus_IAS
+effect_bonus_IAS::effect_bonus_IAS()
+{
+Name="Increase Attack Speed";
+ID="effect_bonus_IAS";
+disabled=0;
+temporary=0;
+bonusIAS=55;
+bonusIASString="Attack speed bonus";
+initRank=12;
+}
+
+effect_bonus_IAS* effect_bonus_IAS::getnewCopy()
+{
+return new effect_bonus_IAS(*this);
+// How to use: effect_bonus_IAS *tmpEff = &(baseEff->getnewCopy());
+}
+
+void effect_bonus_IAS::Init()
+{
+    Attacker.IAS=Attacker.IAS+bonusIAS;
+    Frame1->recalculateAttackSpeed();
+}
+
+void effect_bonus_IAS::FillPropertiesGrid(effectsProperties *callBackEffBase)
+{
+    callBackEffBase->Clear();
+    callBackEffBase->AppendFullRow(bonusIASString,bonusIAS);
     callBackEffBase->ptrtoItem=this;
 }
 

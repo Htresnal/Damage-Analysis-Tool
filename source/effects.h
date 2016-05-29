@@ -292,6 +292,17 @@ public:
     effect_manaburn *getnewCopy();
 };
 
+class effect_bonus_IAS : public basic_effect
+{
+public:
+    int bonusIAS;
+    wxString bonusIASString;
+    effect_bonus_IAS();
+    void Init();
+    void FillPropertiesGrid(effectsProperties *callBackEffBase);
+    effect_bonus_IAS *getnewCopy();
+};
+
 class effect_increase_IAS : public basic_effect
 {
 public:

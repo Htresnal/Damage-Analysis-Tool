@@ -17,8 +17,6 @@
 //*)
 #include "DamageAnalysisMain.h"
 
-DamageAnalysisFrame *DamageInputWindow;
-
 wxString BaseAttackDamageMinInputWas;
 wxString BaseAttackDamageMaxInputWas;
 
@@ -46,9 +44,9 @@ extern std::vector<effect_block_damage> shieldBlockEffects;
 extern double InDamageBase, InDamage, InDamageRaw, InDamageMagic, InDamageNoReduct, aps, attackTimePart, InDamagePerCycle, InDamageMagicPerCycle, InDamageNoReductPerCycle;
 extern int DoDoubleHit;
 
-extern AnalysisLogs *Frame1;
-extern effectsProperties *Frame2;
-extern GameSettings *Frame3;
+AnalysisLogs *Frame1;
+effectsProperties *Frame2;
+GameSettings *Frame3;
 
 extern void GetGameRules();
 
@@ -145,7 +143,7 @@ DamageAnalysisFrame::DamageAnalysisFrame(wxWindow* parent,wxWindowID id)
     wxMenuBar* MenuBar1;
     wxMenu* Menu2;
 
-    Create(parent, wxID_ANY, _("Damage analysis Tool v0.2"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxNO_BORDER, _T("wxID_ANY"));
+    Create(parent, wxID_ANY, _("Damage analysis Tool v0.3"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxNO_BORDER, _T("wxID_ANY"));
     SetClientSize(wxSize(700,510));
     SetMinSize(wxSize(700,510));
     SetMaxSize(wxSize(700,510));
@@ -188,7 +186,7 @@ DamageAnalysisFrame::DamageAnalysisFrame(wxWindow* parent,wxWindowID id)
     MagicalResistanceText = new wxStaticText(Panel1, ID_STATICTEXT14, _("Magical Resistance"), wxPoint(120,136), wxDefaultSize, 0, _T("ID_STATICTEXT14"));
     MagicResistanceInput = new wxTextCtrl(Panel1, ID_TEXTCTRL15, _("0"), wxPoint(225,136), wxSize(48,21), wxTE_PROCESS_ENTER, numsOnlyValidatorSigned, _T("ID_TEXTCTRL15"));
     StaticText2 = new wxStaticText(Panel1, ID_STATICTEXT15, _("%"), wxPoint(274,136), wxDefaultSize, 0, _T("ID_STATICTEXT15"));
-    WithstandInput = new wxTextCtrl(Panel1, ID_TEXTCTRL16, _("1"), wxPoint(305,280), wxSize(56,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL16"));
+    WithstandInput = new wxTextCtrl(Panel1, ID_TEXTCTRL16, _("10"), wxPoint(305,280), wxSize(56,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL16"));
     WithstandText = new wxStaticText(Panel1, ID_STATICTEXT16, _("Withstand"), wxPoint(308,264), wxDefaultSize, 0, _T("ID_STATICTEXT16"));
     WithstandText2 = new wxStaticText(Panel1, ID_STATICTEXT17, _("seconds"), wxPoint(312,300), wxDefaultSize, 0, _T("ID_STATICTEXT17"));
     ArmorText = new wxStaticText(Panel1, ID_STATICTEXT18, _("Armor"), wxPoint(28,136), wxDefaultSize, 0, _T("ID_STATICTEXT18"));
@@ -289,6 +287,10 @@ DamageAnalysisFrame::DamageAnalysisFrame(wxWindow* parent,wxWindowID id)
     Connect(idSettings,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&DamageAnalysisFrame::OnMenuSettingsSelected);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&DamageAnalysisFrame::OnAbout);
     //*)
+    //Initializing additional windows
+    Frame1=new AnalysisLogs(this,wxNewId());
+    Frame2=new effectsProperties(this,wxNewId());
+    Frame3=new GameSettings(this,wxNewId());
     //Initializing Game rules
     GetGameRules();
     //Initializing main window   Initializing main window   Initializing main window   Initializing main window
@@ -943,16 +945,11 @@ void DamageAnalysisFrame::OnBATInputTextEnter(wxCommandEvent& event)
 
 void DamageAnalysisFrame::OnBATLostFocus(wxFocusEvent& event)
 {
-    if (wxIsEmpty(BATInput->GetValue()) || BATInput->GetValue().IsSameAs('0') || BATInput->GetValue().IsSameAs('-0'))
+    double tmpData=wxAtof(BATInput->GetValue());
+    if (wxIsEmpty(BATInput->GetValue()) || tmpData<=0)
     {
         BATInput->SetValue("1.0");
     }
-    double tmpData=wxAtof(BATInput->GetValue());
-    if (tmpData<=0)
-    {
-        tmpData=1.0;
-    }
-    BATInput->SetValue(wxString::Format(wxT("%f"), tmpData));
     event.Skip();
 }
 

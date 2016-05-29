@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <wxsmith>
 	<object class="wxFrame" name="DamageAnalysisFrame">
-		<title>Damage analysis Tool v0.2</title>
+		<title>Damage analysis Tool v0.3</title>
 		<icon>resources\myIcon.png</icon>
 		<size>700,510</size>
 		<minsize>700,510</minsize>
@@ -201,7 +201,7 @@
 						<pos>274,136</pos>
 					</object>
 					<object class="wxTextCtrl" name="ID_TEXTCTRL16" variable="WithstandInput" member="yes">
-						<value>1</value>
+						<value>10</value>
 						<pos>305,280</pos>
 						<size>56,21</size>
 						<validator>numsOnlyValidator</validator>
