@@ -9,3 +9,18 @@ dota_english.txt is inside the game folder;
 - There are total of 28 appliable effects: Critical hit, Manaburn, Feast, Backstab, Damage amplification, Double hit, Fury Swipes, Stat steal and etc.
 - Damage done is split by 3 channels(Physical, Magical, Pure). Each with it's own reducement\amplification.
 - Damage is calculated strictly by the formula "Defender <- Attacker"(One way only).
+
+Changelog:
+v0.1
+- Initial release
+v0.2
+- Added 15 more applicable effects.
+v0.3
+- Fixed Base Attack Time crash when value is zero or less
+- Starting Withstand field is now 10
+- Fixed unneeded zeros appearing when changing Base Attack Time field.
+- Lethal hit: Now also displays time.
+- New effect: Bonus attack speed.
+
+Planned features:
+- Mana cost calculating feature.
