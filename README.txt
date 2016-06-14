@@ -24,3 +24,7 @@ v0.3
 
 Planned features:
 - Mana cost calculating feature.
+
+Updating game related files:
+- dota_english.txt - This file can be found at: Steam\steamapps\common\dota 2 beta\game\dota\resource
+- npc_heroes.txt - To obtain this file you need to access Steam\steamapps\common\dota 2 beta\game\dota\pak01_dir.vpk with GCFScape programm, and inside of it, at pak01_dir.vpk\scripts\npc you can find it.
