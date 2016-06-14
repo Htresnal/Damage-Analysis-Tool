@@ -56,6 +56,9 @@ GameSettings::GameSettings(wxWindow* parent,wxWindowID id,const wxPoint& pos,con
 	Connect(wxID_ANY,wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&GameSettings::OnClose);
 	//*)
 
+    //Initializing Game rules
+    GetGameRules();
+
 	wxGridCellEditor *tmpEditor;
 	cellDataObject *tmpDataObj;
     Grid1->AppendRows(1,true);
@@ -65,7 +68,7 @@ GameSettings::GameSettings(wxWindow* parent,wxWindowID id,const wxPoint& pos,con
     tmpDataObj->type=_("I");
     tmpEditor->SetClientData(&(*tmpDataObj));
     Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Starting health");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,&(*tmpEditor));
+    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
     Grid1->SetCellValue(wxString::Format(wxT("%i"),gamerule_StartHP),Grid1->GetNumberRows()-1,0);
 
     Grid1->AppendRows(1,true);
@@ -75,7 +78,7 @@ GameSettings::GameSettings(wxWindow* parent,wxWindowID id,const wxPoint& pos,con
     tmpDataObj->type=_("I");
     tmpEditor->SetClientData(&(*tmpDataObj));
     Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Starting mana");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,&(*tmpEditor));
+    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
     Grid1->SetCellValue(wxString::Format(wxT("%i"),gamerule_StartMP),Grid1->GetNumberRows()-1,0);
 
 	Grid1->AppendRows(1,true);
@@ -85,7 +88,7 @@ GameSettings::GameSettings(wxWindow* parent,wxWindowID id,const wxPoint& pos,con
     tmpDataObj->type=_("I");
     tmpEditor->SetClientData(&(*tmpDataObj));
     Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Starting IAS");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,&(*tmpEditor));
+    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
     Grid1->SetCellValue(wxString::Format(wxT("%i"),gamerule_StartIAS),Grid1->GetNumberRows()-1,0);
 
 	Grid1->AppendRows(1,true);
@@ -100,7 +103,7 @@ GameSettings::GameSettings(wxWindow* parent,wxWindowID id,const wxPoint& pos,con
     tmpDataObj->type=_("I");
     tmpEditor->SetClientData(&(*tmpDataObj));
     Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Health per STR");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,&(*tmpEditor));
+    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
     Grid1->SetCellValue(wxString::Format(wxT("%i"),gamerule_HPPerStr),Grid1->GetNumberRows()-1,0);
 
     Grid1->AppendRows(1,true);
@@ -110,7 +113,7 @@ GameSettings::GameSettings(wxWindow* parent,wxWindowID id,const wxPoint& pos,con
     tmpDataObj->type=_("D");
     tmpEditor->SetClientData(&(*tmpDataObj));
     Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Health regen per STR");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,&(*tmpEditor));
+    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
     Grid1->SetCellValue(wxString::FromDouble(gamerule_HPRegenPerStr,2),Grid1->GetNumberRows()-1,0);
 
     Grid1->AppendRows(1,true);
@@ -120,7 +123,7 @@ GameSettings::GameSettings(wxWindow* parent,wxWindowID id,const wxPoint& pos,con
     tmpDataObj->type=_("D");
     tmpEditor->SetClientData(&(*tmpDataObj));
     Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Armor per AGI");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,&(*tmpEditor));
+    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
     Grid1->SetCellValue(wxString::FromDouble(gamerule_ArmorPerAgi,2),Grid1->GetNumberRows()-1,0);
 
     Grid1->AppendRows(1,true);
@@ -130,7 +133,7 @@ GameSettings::GameSettings(wxWindow* parent,wxWindowID id,const wxPoint& pos,con
     tmpDataObj->type=_("I");
     tmpEditor->SetClientData(&(*tmpDataObj));
     Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Mana per INT");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,&(*tmpEditor));
+    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
     Grid1->SetCellValue(wxString::Format(wxT("%i"),gamerule_MPPerInt),Grid1->GetNumberRows()-1,0);
 
     Grid1->AppendRows(1,true);
@@ -140,7 +143,7 @@ GameSettings::GameSettings(wxWindow* parent,wxWindowID id,const wxPoint& pos,con
     tmpDataObj->type=_("D");
     tmpEditor->SetClientData(&(*tmpDataObj));
     Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Mana regen per INT");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,&(*tmpEditor));
+    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
     Grid1->SetCellValue(wxString::FromDouble(gamerule_MPRegenPerInt,2),Grid1->GetNumberRows()-1,0);
 }
 

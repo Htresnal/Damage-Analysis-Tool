@@ -291,8 +291,6 @@ DamageAnalysisFrame::DamageAnalysisFrame(wxWindow* parent,wxWindowID id)
     Frame1=new AnalysisLogs(this,wxNewId());
     Frame2=new effectsProperties(this,wxNewId());
     Frame3=new GameSettings(this,wxNewId());
-    //Initializing Game rules
-    GetGameRules();
     //Initializing main window   Initializing main window   Initializing main window   Initializing main window
     attackEffectsChoice2 = new wxChoice(attackEffectsCtrl, ID_CHOICE3, wxPoint(0,0), wxSize(176,21), 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE3"));
     defenseEffectsChoice2 = new wxChoice(defenseEffectsCtrl, ID_CHOICE4, wxPoint(0,0), wxSize(176,21), 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE4"));
