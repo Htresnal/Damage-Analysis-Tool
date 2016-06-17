@@ -21,10 +21,13 @@ v0.3
 - Fixed unneeded zeros appearing when changing Base Attack Time field.
 - Lethal hit: Now also displays time.
 - New effect: Bonus attack speed.
+v0.4
+- Cosmetic improvements.
+- Fixed incorrect Game Settings data appearance.
 
 Planned features:
 - Mana cost calculating feature.
 
 Updating game related files:
-- dota_english.txt - This file can be found at: Steam\steamapps\common\dota 2 beta\game\dota\resource
-- npc_heroes.txt - To obtain this file you need to access Steam\steamapps\common\dota 2 beta\game\dota\pak01_dir.vpk with GCFScape programm, and inside of it, at pak01_dir.vpk\scripts\npc you can find it.
+	dota_english.txt - This file can be found at: Steam\steamapps\common\dota 2 beta\game\dota\resource
+	npc_heroes.txt - To obtain this file you need to access Steam\steamapps\common\dota 2 beta\game\dota\pak01_dir.vpk with GCFScape programm, and inside of it, at pak01_dir.vpk\scripts\npc you can find it.
