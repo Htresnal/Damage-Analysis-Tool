@@ -59,7 +59,7 @@ WXCURSOR_CROSS          CURSOR  DISCARDABLE     "wx/msw/cross.cur"
 
 // First wx icon in alphabetical order, so it will be used by Explorer if the
 // application doesn't have any icons of its own
-wxICON_AAA                      ICON "myIcon2.ico"
+wxICON_AAA                      ICON "myIcon.ico"
 
 //wxDEFAULT_FRAME               ICON "wx/msw/std.ico"
 //wxDEFAULT_MDIPARENTFRAME      ICON "wx/msw/mdi.ico"

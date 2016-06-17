@@ -143,7 +143,7 @@ DamageAnalysisFrame::DamageAnalysisFrame(wxWindow* parent,wxWindowID id)
     wxMenuBar* MenuBar1;
     wxMenu* Menu2;
 
-    Create(parent, wxID_ANY, _("Damage analysis Tool v0.3"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxNO_BORDER, _T("wxID_ANY"));
+    Create(parent, wxID_ANY, _("Damage analysis Tool v0.4"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxNO_BORDER, _T("wxID_ANY"));
     SetClientSize(wxSize(700,510));
     SetMinSize(wxSize(700,510));
     SetMaxSize(wxSize(700,510));
@@ -362,7 +362,7 @@ void DamageAnalysisFrame::OnQuit(wxCommandEvent& event)
 
 void DamageAnalysisFrame::OnAbout(wxCommandEvent& event)
 {
-    wxMessageBox(_("This program allows you to emulate the in-game fight process, involving receiver of damage - Defender, and dealer of damage - Attacker.\n\nMade by Siege. 2016"), _("Damage Analysis Tool"));
+    wxMessageBox(_("This program was made with the original game mechanics in mind.\nAll the data is approximate.\nFor additional information or help, contact me on Github."), _("Damage Analysis Tool v0.4"));
 }
 
 void DamageAnalysisFrame::OnClose(wxCloseEvent& event)
