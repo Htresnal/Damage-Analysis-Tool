@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <wxsmith>
 	<object class="wxFrame" name="DamageAnalysisFrame">
-		<title>Damage analysis Tool v0.3</title>
+		<title>Damage analysis Tool v0.4</title>
 		<icon>resources\myIcon.png</icon>
 		<size>700,510</size>
 		<minsize>700,510</minsize>
