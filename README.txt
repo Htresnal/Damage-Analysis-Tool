@@ -1,5 +1,7 @@
 Damage Analysis Tool
 	Emulates fight, allows to get a total hit-wise information: total hits done, health and mana left, attack speed, raw damage and damage per hit and etc.
+	
+Compiler: MinGW32
 
 Whats new about this programm:
 - Emulation is hit-based. That means everytime hero makes a hit, program calculates all changes happened during time inbetween it and the previous hit.
