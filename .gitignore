@@ -14,4 +14,5 @@ dota_english.txt
 damageanalysis_settings.txt
 
 !bin/Release/dota_english.txt
-!bin/Release/dota_english.txt
+!bin/Release/npc_heroes.txt
+!bin/Release/damageanalysis_settings.txt
