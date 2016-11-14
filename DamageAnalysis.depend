@@ -1834,7 +1834,7 @@
 
 1412631243 d:\wxwidgets-3.0.2\include\wx\msw\rcdefs.h
 
-1479044279 source:d:\cprojects\damageanalysis\damageanalysismain.cpp
+1479133058 source:d:\cprojects\damageanalysis\damageanalysismain.cpp
 	<wx/bitmap.h>
 	<wx/icon.h>
 	<wx/settings.h>
@@ -2626,7 +2626,7 @@
 
 1458031296 d:\cprojects\damageanalysis\effects.cpp
 
-1479044716 source:d:\cprojects\damageanalysis\effectsproperties.cpp
+1479136626 source:d:\cprojects\damageanalysis\effectsproperties.cpp
 	"effectsProperties.h"
 	<wx/grid.h>
 	<wx/intl.h>
@@ -2690,7 +2690,7 @@
 	<gmp.h>
 	<list>
 
-1471772392 source:d:\cprojects\damageanalysis\effects.cpp
+1479136374 source:d:\cprojects\damageanalysis\effects.cpp
 	"effects.h"
 	"AnalysisLogs.h"
 	"heroData.h"
@@ -3391,7 +3391,7 @@
 	"DamageAnalysisMain.h"
 	"Vectors.h"
 
-1462455942 source:d:\cprojects\damageanalysis\herodata.cpp
+1479137106 source:d:\cprojects\damageanalysis\herodata.cpp
 	"heroData.h"
 
 1462434727 d:\cprojects\damageanalysis\gamesettings.h

@@ -288,20 +288,9 @@ void effectsProperties::OnGrid1CellSelect(wxGridEvent& event)
 {
     selectPosRow=event.GetRow();
     selectPosCol=event.GetCol();
-    if (selectPosRow==1)
+    selectPosRow=(selectPosRow==1?0:event.GetRow()-1);
+    if (selectPosCol!=0)
     {
-         selectPosRow=0;
-    }
-    else
-    {
-         selectPosRow=event.GetRow()-1;
-    }
-    if (selectPosCol==0)
-    {
-        selectPosCol=0;
-    }
-    else
-    {
-         selectPosCol=event.GetCol();
+        selectPosCol=event.GetCol();
     }
 }

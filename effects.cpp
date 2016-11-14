@@ -58,9 +58,9 @@ extern hero_Defender Defender;
 extern hero_Attacker Attacker;
 
 // EFFECT MAP EFFECT MAP EFFECT MAP EFFECT MAP EFFECT MAP EFFECT MAP
-// В этой карте добавляются эффекты. Достаточно объявить их здесь, и они уже будут присутствовать в UI
-// программы. Если хотите добавить новые - то лезть далее никуда ненадо.
-// Карты разделены на две стороны - для защищающегося и атакующего.
+// This map contains all the accessible effects.
+// If you wish to add your own effect to the UI - just add them here.
+// Maps are split by two purposes - to be used by the Attacker, and by the Defender.
 	std::map<std::string,basic_effect *> effectMapAttack=
 	{
     {"effect_stats_bonus_attacker", new effect_stats_bonus_attacker},
@@ -131,7 +131,7 @@ return;
 
 double *basic_effect::checkDamageType()
 {
-// В этом месте определяется тип повреждения навыка. Эта функция нужна только для повреждающих эффектов.
+// Here, the damage type is being set. This function is only used by the damage dealing effects.
     if (damageType==Physical)
     {
         return &InDamagePerCycle;
@@ -162,32 +162,32 @@ return new basic_effect(*this);
 // effect_stats_bonus_defender
 effect_stats_bonus_defender::effect_stats_bonus_defender()
 {
-ID="effect_stats_bonus_defender"; // - ID для нахождения кодом.
-Name="Attribute Bonus"; // - Как выглядит в UI.
-initRank=-5; // Ранг включения во время эмуляции. Меньше=первее.
-disabled=0; // Скиллы 1 здесь исчезнут из порядка эмуляциию
-temporary=0; // Скиллы с 1 здесь, будут зачищены из вектора(списка) эффектовю
-statbonus=2; // Дефолтное значение параметра.
-statbonusString="Bonus to stats"; // Название параметра в UI настроек эффекта.
-mainStat=AllStats; // Выбранный пользователем тип бонуса. По дефолту - сразу все.
+ID="effect_stats_bonus_defender";
+Name="Attribute Bonus"; // UI Choice List representation.
+initRank=-5; // Rank of emulation order. Less is prior.
+disabled=0; // Skills with 1 will disappear out of the emulation order.
+temporary=0; // Skills with 1 would be deleted out of the effect vector(list of active effects).
+statbonus=2; // Default stat value.
+statbonusString="Bonus to stats"; // Effect description string in the properties UI.
+mainStat=AllStats; // Selected stat. Default is all 3 stats.
 statStrings[0] = "Strenght";
 statStrings[1] = "Agility";
 statStrings[2] = "Intelligence";
-statStrings[3] = "All stats";// Аррэй с текстом(номера соотносятся к действию эффекта).
-rowName="Stat type"; // Текст для описательной части в настройках.
+statStrings[3] = "All stats";// Text array(Numbers correlate with the effect actions).
+rowName="Stat type"; // Effect description string in the properties UI.
 }
 
 effect_stats_bonus_defender* effect_stats_bonus_defender::getnewCopy()
 {
 return new effect_stats_bonus_defender(*this);
-// Нужно для главного UI, для подцепки к эффектам.
+// This part is essential for the main UI, to be hook up with the effects.
 // How to use: effect_stats_bonus_defender *tmpEff = &(baseEff->getnewCopy());
 }
 
 void effect_stats_bonus_defender::Init()
 {
-    // Init() включается один единственный раз перед эмуляцией, но есть исключения в виде эффектов,
-    // создающих свои child копии. Они могут проInit()'иться в любой момент времени эмуляции.
+    // Init() is run once, before the emulation begins, but there is are rare occasions, when effects can,
+    // make their own child copies. They could be Init()'ed at any time, during the emulation time.
     if (mainStat==Strenght)
     {
         Defender.changeSTR(statbonus);
@@ -211,14 +211,14 @@ void effect_stats_bonus_defender::Init()
 
 void effect_stats_bonus_defender::FillPropertiesGrid(effectsProperties *callBackEffBase)
 {
-    // Эта часть отвечает за общение с настроечным UI эффекта. Здесь заряжаются переменные, а UI
-    // общается с ними через референсы. Присутствует система "адаптации типа переменных" и
-    // принимает только два типа переменных - double и int.
+    // That part is responsible of the Properties menu. Here, variables are being loaded in, and UI
+    // communicate with them using references. System of "type adaptation" is used, receiving only 2 types:
+    // double and int.
     callBackEffBase->Clear();
     callBackEffBase->AppendCustomSelector(mainStat,4,rowName,statStrings);
     callBackEffBase->AppendFullRow(statbonusString,statbonus);
     callBackEffBase->ptrtoItem=this;
-    // С иными видами Append'ов можете познакомиться в effectsProperties.cpp
+    // With kinds of Append you can find in the effectsProperties.cpp file.
 }
 
 // effect_reduce_damage
@@ -248,8 +248,8 @@ void effect_reduce_damage::Continue()
 
 void effect_reduce_damage::DoDoubleAttack()
 {
-    // Некоторые эффекты совсем иначе ведут себя при активации "двойного удара", например яды,
-    // или иные эффекты, повязанные на времени для актуализации своей работы.
+    // Some effects act differently during proc of the "second hit", for example - poisons,
+    // or effects, that require time to do their work.
     Continue();
     return;
 }
@@ -382,7 +382,7 @@ return new effect_bonus_hpregen(*this);
 
 void effect_bonus_hpregen::Init()
 {
-    // Оригинальные значения сохраняются перед началом эмуляции, и восстанавливаются после.
+    // Original values are saved before the emulation start, and then restored afterwards.
     Defender.HPRegen=Defender.HPRegen+hpregen;
 return;
 }
@@ -489,11 +489,11 @@ void effect_mana_shield::Continue()
     double tmpManaAsShield;
     if (InDamageNoReductPerCycle!=0 && Defender.MP!=0)
     {
-        tmpManaAsShield=(InDamageNoReductPerCycle/100*percentage)/dpm;//Столько маны нужно вычесть
+        tmpManaAsShield=(InDamageNoReductPerCycle/100*percentage)/dpm;//This much mana we need to remove.
         if (Defender.MP>=tmpManaAsShield)
         {
             Defender.MP=Defender.MP-tmpManaAsShield;
-            InDamageNoReductPerCycle=InDamageNoReductPerCycle/100*(100-percentage);//Реструктурируем входящее повреждение, чтобы оно содержало пониженное повреждение
+            InDamageNoReductPerCycle=InDamageNoReductPerCycle/100*(100-percentage);//Restructuring the incoming damage to contain reduced damage.
         }
         else
         {
@@ -503,11 +503,11 @@ void effect_mana_shield::Continue()
     }
     if (InDamageMagicPerCycle!=0 && Defender.MP!=0)
     {
-        tmpManaAsShield=(InDamageMagicPerCycle/100*percentage)/dpm;//Столько маны нужно вычесть
+        tmpManaAsShield=(InDamageMagicPerCycle/100*percentage)/dpm;
         if (Defender.MP>=tmpManaAsShield)
         {
             Defender.MP=Defender.MP-tmpManaAsShield;
-            InDamageMagicPerCycle=InDamageMagicPerCycle/100*(100-percentage);//Реструктурируем входящее повреждение, чтобы оно содержало пониженное повреждение
+            InDamageMagicPerCycle=InDamageMagicPerCycle/100*(100-percentage);
         }
         else
         {
@@ -517,11 +517,11 @@ void effect_mana_shield::Continue()
     }
     if (InDamagePerCycle!=0 && Defender.MP!=0)
     {
-        tmpManaAsShield=(InDamagePerCycle/100*percentage)/dpm;//Столько маны нужно вычесть
+        tmpManaAsShield=(InDamagePerCycle/100*percentage)/dpm;
         if (Defender.MP>=tmpManaAsShield)
         {
             Defender.MP=Defender.MP-tmpManaAsShield;
-            InDamagePerCycle=InDamagePerCycle/100*(100-percentage);//Реструктурируем входящее повреждение, чтобы оно содержало пониженное повреждение
+            InDamagePerCycle=InDamagePerCycle/100*(100-percentage);
         }
         else
         {
@@ -560,9 +560,10 @@ ID="effect_magic_resistance";
 disabled=0;
 temporary=0;
 externalContinueCycle=true;
-// Эффекты с externalContinueCycle говорят эмулятору не трогать их, потому-что они или имеют
-// свой собственный цикл, или учавствуют в чужом. На этом примере - эффекту вообще нет необходимости
-// включать Continue(), т.к. он подцеплен к magicResistanceBuffer, и циклу на его основе.
+// Effects with externalContinueCycle are telling emulator not to consider them, because they
+// contain their own running cycle, or being a part of someone else's cycle. In this example,
+// effect don't need to be enabled through the Continue(), since it is hooked up with the magicResistanceBuffer,
+// and a cycle, that is based on it.
 percentage=15;
 initRank=10;
 }
@@ -1812,7 +1813,7 @@ void effect_double_attack::Continue()
         DoDoubleHit=DoDoubleHit+1;
         return;
     }
-    asynchronousAttacks=asynchronousAttacks+currSingleAttackTime;// Place current attack rate at the time buffer.
+    asynchronousAttacks=asynchronousAttacks+currSingleAttackTime;// Place current attack rate in the time buffer.
     if (asynchronousAttacks>=cooldown)// If any attacks are awaiting for release
     {
         asynchronousAttacks=0;

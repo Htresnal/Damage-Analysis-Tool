@@ -170,8 +170,7 @@ for (int R=minRanks;R<=maxRanks;R++)
 }
 // ___ Attack speed+BAT evaluation
 richTextPtr->AppendText("\nAttacker's base attack time: "+wxString::FromDouble(Attacker.BATD,2));
-richTextPtr->AppendText("\nAttacker's IAS: "+wxString::FromDouble(Attacker.IAS,0)+
-    " ("+wxString::FromDouble(singleAttackTime,2)+" per second)");
+richTextPtr->AppendText("\nAttacker's IAS: "+wxString::FromDouble(Attacker.IAS,0)+" ("+wxString::FromDouble(singleAttackTime,2)+" per second)");
 totalhits=(double)aps*(wxAtoi(Frame->WithstandInput->GetValue()));
 richTextPtr->AppendText("\nTotal hits: "+wxString::Format(wxT("%i"),totalhits));
 richTextPtr->BeginTextColour(wxColour(255, 0, 0));
@@ -518,8 +517,7 @@ void AnalysisLogs::calcCrits(std::vector<effect_critical_damage *> &myVector)
             currChanceOldAccum=currChanceAccum;
             currChanceAccum=currChanceAccum+(100-currChanceAccum)/100*(double)myVector.at(critLVL)->chance;
             // ___ To calculate damage, we need to get it's part in main chance window:
-            // ___ For effect with chance 20% being first in hierarchy, we'll have 80% left for other effects to use: 100%-20%=80%
-            // ___ This way, we get the chance window left for other effects to utilize.
+            // ___ For effect with chance 20% being first in hierarchy, we'll have 80% chance window left for other effects to use: 100%-20%=80%
             // ___ Lets take 50% chance to be next in hierarchy, and thats how it's chance window would be calculated: 80%/100*50%=40%.
             // ___ Only 40% of that 50% effect could have a part in calculation.
             // ___ Next effect of 90% will have a part of 36%, leaving 4% for other effects with lower hierarchy to utilize.
@@ -553,9 +551,8 @@ void AnalysisLogs::calcShieldBlock(std::vector<effect_block_damage *> &myVector)
             currChanceOldAccum=currChanceAccum;
             currChanceAccum=currChanceAccum+(100-currChanceAccum)/100*(double)myVector.at(blockLVL)->chance;
             // ___ To calculate damage, we need to get it's part in the "Window of chances":
-            // ___ For effect with chance 20% being first in hierarchy, we'll have 80% left for other effects to use: 100%-20%=80%
-            // ___ TIP: As you may know, shield effects have a hierarchy. Effects with bigger "block" value are computed first.
-            // ___ This way, we get the chance window left for other effects to utilize.
+            // ___ For effect with chance 20% being first in hierarchy, we'll have 80% chance window left for other effects to use: 100%-20%=80%
+            // ___ TIP: Shield effects have a hierarchy. Effects with bigger "block" value are applied first.
             // ___ Lets take 50% chance to be next in hierarchy, and thats how it's chance window would be calculated: 80%/100*50%=40%.
             // ___ Only 40% of that 50% effect could have a part in calculation.
             // ___ Next effect of 90% will have a part of 36%, leaving 4% for other effects with lower hierarchy to utilize.

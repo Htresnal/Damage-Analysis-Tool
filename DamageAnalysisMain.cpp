@@ -357,7 +357,7 @@ void DamageAnalysisFrame::OnQuit(wxCommandEvent& event)
 
 void DamageAnalysisFrame::OnAbout(wxCommandEvent& event)
 {
-    wxMessageBox(_("This program was made with the original game mechanics in mind.\nAll the data is approximate.\nFor additional information or help, contact me on Github."), _("Damage Analysis Tool v0.4"));
+    wxMessageBox(_("\nFor additional information or help, contact me on Github:\nhttps://github.com/Htresnal/DamageAnalysisTool\n\nOr by email: htresnal@gmail.com"), _("Damage Analysis Tool v0.4"));
 }
 
 void DamageAnalysisFrame::OnClose(wxCloseEvent& event)
@@ -388,7 +388,7 @@ void DamageAnalysisFrame::OnWithstandInputTextEnter(wxCommandEvent& event)
 
 void DamageAnalysisFrame::EffectChoiceFill()
 {
-    // Заполнение чойзов с эффектами данными из карт.
+    // Filling choices with effects, which are taken out of maps.
     for (std::map<std::string,basic_effect *>::iterator it=effectMapAttack.begin(); it!=effectMapAttack.end(); ++it)
     {
         attackEffectsChoice2->Append(it->second->Name,&(*it->second));
@@ -410,12 +410,12 @@ void DamageAnalysisFrame::OnChoice1Select(wxCommandEvent& event)
 
 void DamageAnalysisFrame::HeroFillForms()
 {
-    //Пересчёт уровня
+    //Level recalc
     int Level=wxAtoi(LevelInput->GetValue());
     // ___ Processing stats:
     if (Level>1)
     {
-        // Подгон статов в UI.
+        // UI Stat assigning.
         StatStrInput->SetValue(wxString::FromDouble(heroTemp->AttributeBaseStrength+(heroTemp->AttributeStrengthGain*(Level-1)),0));
         StatAgiInput->SetValue(wxString::FromDouble(heroTemp->AttributeBaseAgility+(heroTemp->AttributeAgilityGain*(Level-1)),0));
         StatIntInput->SetValue(wxString::FromDouble(heroTemp->AttributeBaseIntelligence+(heroTemp->AttributeIntelligenceGain*(Level-1)),0));
@@ -426,7 +426,7 @@ void DamageAnalysisFrame::HeroFillForms()
         StatAgiInput->SetValue(wxString::FromDouble(heroTemp->AttributeBaseAgility,0));
         StatIntInput->SetValue(wxString::FromDouble(heroTemp->AttributeBaseIntelligence,0));
     }
-    // ___ Magic resist
+    // ___ Magic resistance
     MagicResistanceInput->SetValue(wxString::FromDouble(heroTemp->MagicalResistance,0));
     // ___ Filling UI with fresh information:
     HeroFillForms(Strenght);
@@ -625,7 +625,7 @@ void DamageAnalysisFrame::OndefenseEffectsCtrlItemActivated2(wxListEvent& event)
     {
         if (defenseEffectsCtrl->GetItemData(foundIndex)!=NULL)
         {
-            // Эта функция будет всегда игнорировать самый первый элемент в списке, т.к. он пустышка под выпадающее меню.
+            // This function should(and will) ignore the first element, as its just a placeholder, to fit the drop down menu.
             Frame2->currEditObject=(void *)event.GetItem().GetData();
             ((basic_effect *)(Frame2->currEditObject))->FillPropertiesGrid(Frame2);
             Frame2->Show();
@@ -638,7 +638,7 @@ void DamageAnalysisFrame::OndefenseEffectsCtrlItemActivated2(wxListEvent& event)
 
 void DamageAnalysisFrame::OndECBButtonAddClick(wxCommandEvent& event)
 {
-    // Добавление эффекта получением всех данных из чойза, и на их базе раскладывая новый элемент.
+    // Effect fill. Gathering data from choices, forming a new element out of the received data.
     defenceEffects.push_back(((basic_effect *)defenseEffectsChoice2->GetClientData(defenseEffectsChoice2->GetSelection()))->getnewCopy());
     wxListItem tmpListItem;
     tmpListItem.SetId(wxNewId());

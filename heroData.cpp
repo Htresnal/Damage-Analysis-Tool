@@ -1,9 +1,9 @@
 /**
 Stats can't be less than 0. To avoid that, I save all stats that go lower than 0 to statReal. Any changes should be
 done by "set", "change" and "get" preferably:
-set - overrides stats, and is only supposed to be used by the start phase of analysis. Cannot take numbers less than 0;
+set - overrides stats, and is only supposed to be used by the start phase of analysis. Will not take numbers less than 0;
 change - Allows user to manipulate stats, increase or decrease it.
-get - simply causes stat variable to be read, and is made mostly for effects.
+get - simply causes stat variable to be read, and is made mostly for effects(will return 0 if statReal is less than 0).
 
 How to use:
 setSTR(8); - now we have 8 str stat.
@@ -11,8 +11,8 @@ changeSTR(-20); - now we have 0 at str stat, and -12 at the statReal.
 changeSTR(40); - now we have 28 str stat, and 0 at the statReal.
 
 hero class is basically just a variable wearing dummy, thus should not cause any problems with calls
-to the "outside world" and are all-sufficient on their own. It's only dependance is the existance of heroUnit
-class objects, since it need basic stat data and stat growth data.
+to the "outside world" and is all-sufficient on it's own. The only dependence is the existence of heroUnit
+class objects, since it needs basic stat data and stat growth data.
 */
 
 #include "heroData.h"
@@ -99,14 +99,7 @@ int hero::changeStat(double &Stat, int &StatReal, double newStat)
     }
     if (newStat<0)
     {
-        if (Stat==0)
-        {
-            return tmpStat*-1;
-        }
-        else
-        {
-            return newStat;
-        }
+        return (Stat==0?(tmpStat*-1):newStat);
     }
     else
     {
