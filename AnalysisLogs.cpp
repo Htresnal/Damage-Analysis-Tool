@@ -19,7 +19,7 @@ extern hero_Attacker Attacker;
 double InDamageNoReductPerCycleTMP, InDamagePerCycleTMP, InDamagePerCycleCrit, InDamageMagicPerCycleTMP, InDamagePrev, InDamageBase, InDamage, InDamageRaw, InDamageMagic, InDamageNoReduct, aps, singleAttackTime, currAps, currSingleAttackTime, InDamagePerCycle, InDamageMagicPerCycle, InDamageNoReductPerCycle;
 double timeElapsed, timeLethalStrike;
 unsigned totalHitsActual, lethalHit, WhiteDmg;
-int DefendercurrMaxHP;
+unsigned DefendercurrMaxHP;
 
 int DoDoubleHit, GreenDmg;
 
@@ -126,7 +126,7 @@ richTextPtr->AppendText("\nAttacker's bonus damage: ");
 GreenDmg=wxAtoi(Frame->GreenDamageInput->GetValue());
 richTextPtr->AppendText(Frame->GreenDamageInput->GetValue());
 recalculateAttackSpeed();// Is vital.
-InDamage=(double)WhiteDmg+GreenDmg;
+InDamage=WhiteDmg+GreenDmg;
 InDamageMagicPerCycle=0;
 InDamageNoReductPerCycle=0;
 InDamagePerCycle=0;
@@ -342,10 +342,10 @@ else
 }
 if (Defender.HP<=0)
 {
-richTextPtr->BeginTextColour(wxColour(255, 0, 0));
-richTextPtr->WriteText("\nLethal hit:");
-richTextPtr->EndTextColour();
-richTextPtr->WriteText(" ");
+    richTextPtr->BeginTextColour(wxColour(255, 0, 0));
+    richTextPtr->WriteText("\nLethal hit:");
+    richTextPtr->EndTextColour();
+    richTextPtr->WriteText(" ");
     if (lethalHit)
     {
     richTextPtr->AppendText(wxString::Format(wxT("%i"),lethalHit));
@@ -358,22 +358,22 @@ richTextPtr->WriteText(" ");
 richTextPtr->WriteText(" (at "+wxString::FromDouble(timeLethalStrike,2)+" seconds)");
 if (totalHitsActual>=2000 || Attacker.IAS>=1000)
 {
-richTextPtr->BeginTextColour(wxColour(255, 0, 0));
-richTextPtr->WriteText("\nAttack rate limit is reached. Expected precision level is not guaranteed.");
-richTextPtr->EndTextColour();
-richTextPtr->WriteText(" ");
+    richTextPtr->BeginTextColour(wxColour(255, 0, 0));
+    richTextPtr->WriteText("\nAttack rate limit has been reached. Expected precision level is not guaranteed.");
+    richTextPtr->EndTextColour();
+    richTextPtr->WriteText(" ");
 }
-richTextPtr->AppendText("\nActual hits done: "+wxString::Format(wxT("%i"),totalHitsActual));
-richTextPtr->AppendText("\nRaw damage withstanded: "+wxString::FromDouble(InDamageRaw,0));
-richTextPtr->AppendText("\nActual damage withstanded: "+wxString::FromDouble(InDamage+InDamageMagic+InDamageNoReduct,0));
-richTextPtr->AppendText(" (during "+wxString::FromDouble(timeElapsed,2)+" seconds)");
+    richTextPtr->AppendText("\nActual hits done: "+wxString::Format(wxT("%i"),totalHitsActual));
+    richTextPtr->AppendText("\nRaw damage withstanded: "+wxString::FromDouble(InDamageRaw,0));
+    richTextPtr->AppendText("\nActual damage withstanded: "+wxString::FromDouble(InDamage+InDamageMagic+InDamageNoReduct,0));
+    richTextPtr->AppendText(" (during "+wxString::FromDouble(timeElapsed,2)+" seconds)");
 if (Defender.HP<0)
 {
-richTextPtr->AppendText("\nHealth lost after lethal hit: "+wxString::FromDouble(Defender.HP,0));
+    richTextPtr->AppendText("\nHealth lost after lethal hit: "+wxString::FromDouble(Defender.HP,0));
 }
 else
 {
-richTextPtr->AppendText("\nHealth left: "+wxString::FromDouble(Defender.HP,0));
+    richTextPtr->AppendText("\nHealth left: "+wxString::FromDouble(Defender.HP,0));
 }
 richTextPtr->AppendText("\nMana left: "+wxString::FromDouble(Defender.MP,0));
 //Finalization. Post-analyze processes.

@@ -2597,7 +2597,7 @@
 1454868666 d:\cprojects\damageanalysis\analysislog.h
 	<wx/panel.h>
 
-1479047267 source:d:\cprojects\damageanalysis\analysislogs.cpp
+1479148407 source:d:\cprojects\damageanalysis\analysislogs.cpp
 	<wx/intl.h>
 	<wx/string.h>
 	"AnalysisLogs.h"
@@ -2640,7 +2640,7 @@
 	<wx/frame.h>
 	"DamageAnalysisMain.h"
 
-1479027323 d:\cprojects\damageanalysis\commonincludes.h
+1479144785 d:\cprojects\damageanalysis\commonincludes.h
 	<vector>
 	<string>
 	<fstream>
@@ -2688,9 +2688,10 @@
 	<wx/gdicmn.h>
 	<math.h>
 	<gmp.h>
+	<gmpxx.h>
 	<list>
 
-1479136374 source:d:\cprojects\damageanalysis\effects.cpp
+1479148354 source:d:\cprojects\damageanalysis\effects.cpp
 	"effects.h"
 	"AnalysisLogs.h"
 	"heroData.h"
@@ -3386,7 +3387,7 @@
 	<wx/button.h>
 	<wx/dialog.h>
 
-1463072802 d:\cprojects\damageanalysis\herodata.h
+1479148364 d:\cprojects\damageanalysis\herodata.h
 	"commonIncludes.h"
 	"DamageAnalysisMain.h"
 	"Vectors.h"
@@ -3427,7 +3428,7 @@
 
 1412631243 d:\wxwidgets-3.0.2\include\wx\msw\setup.h
 
-1476781472 d:\clibs\gmp-6.1.1\gmp.h
+1479143263 d:\clibs\gmp-6.1.1\gmp.h
 	<iosfwd>
 	<cstdio>
 	<stddef.h>
@@ -6300,4 +6301,16 @@
 1479041897 d:\wxwidgets-3.1.0\lib\gcc_dll\mswu\wx\msw\rcdefs.h
 
 1456688016 d:\wxwidgets-3.1.0\include\wx\msw\rcdefs.h
+
+1466280000 d:\clibs\gmp-6.1.1\gmpxx.h
+	<iosfwd>
+	<cstring>
+	<limits>
+	<utility>
+	<algorithm>
+	<string>
+	<stdexcept>
+	<cfloat>
+	<gmp.h>
+	<type_traits>
 

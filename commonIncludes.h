@@ -50,6 +50,7 @@
 #include <wx/gdicmn.h>
 #include <math.h>
 #include <gmp.h>
+#include <gmpxx.h>
 #include <list>
 
 enum DamageEnum

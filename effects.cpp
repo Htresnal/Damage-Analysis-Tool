@@ -218,7 +218,7 @@ void effect_stats_bonus_defender::FillPropertiesGrid(effectsProperties *callBack
     callBackEffBase->AppendCustomSelector(mainStat,4,rowName,statStrings);
     callBackEffBase->AppendFullRow(statbonusString,statbonus);
     callBackEffBase->ptrtoItem=this;
-    // With kinds of Append you can find in the effectsProperties.cpp file.
+    // Append types can be found at effectsProperties.cpp file.
 }
 
 // effect_reduce_damage
