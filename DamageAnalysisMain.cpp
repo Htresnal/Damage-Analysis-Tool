@@ -7,27 +7,30 @@
  * License:
  **************************************************************/
 //(*InternalHeaders(DamageAnalysisFrame)
+#include <wx/bitmap.h>
+#include <wx/icon.h>
 #include <wx/settings.h>
 #include <wx/font.h>
 #include <wx/intl.h>
+#include <wx/image.h>
 #include <wx/string.h>
 //*)
 #include "DamageAnalysisMain.h"
 
-DamageAnalysisFrame *DamageInputWindow;
-
-const double speedBATPart=5.72;
-const double speedBATStart=-100;
-
-wxImageList* myImages=new wxImageList(14,14);
-
 wxString BaseAttackDamageMinInputWas;
 wxString BaseAttackDamageMaxInputWas;
 
-wxKeyboardState myKeyHandler;
-std::vector<double> magicResistanceBuffer;
+std::string gameRulePath="DamageAnalysis_settings.txt";
+
+extern int gamerule_HPPerStr, gamerule_MPPerInt, gamerule_StartHP, gamerule_StartMP, gamerule_StartIAS;
+extern double gamerule_ArmorPerAgi, gamerule_HPRegenPerStr, gamerule_MPRegenPerInt;
+
+extern std::vector<double> magicResistanceBuffer;
 
 extern heroUnit *heroTemp;
+extern heroUnit *heroAttTemp;
+hero_Defender Defender;
+hero_Attacker Attacker;
 extern std::vector<heroUnit> heroVector;
 
 extern std::map<std::string,basic_effect *> effectMapAttack;
@@ -38,51 +41,19 @@ extern std::vector<basic_effect *> defenceEffects;
 extern std::vector<effect_critical_damage> critEffects;
 extern std::vector<effect_block_damage> shieldBlockEffects;
 
-extern double addWhiteDmg;
-extern double  ARReduct, InDamageBase, InDamage, InDamageRaw, InDamageMagic, InDamageNoReduct, aps, attackPerSecondPart, magicResist, InDamagePerCycle, InDamageMagicPerCycle, InDamageNoReductPerCycle;
-extern int statstr, statint, statagi, HP, MP, DoDoubleHit, armor;
+extern double InDamageBase, InDamage, InDamageRaw, InDamageMagic, InDamageNoReduct, aps, attackTimePart, InDamagePerCycle, InDamageMagicPerCycle, InDamageNoReductPerCycle;
+extern int DoDoubleHit;
 
-extern AnalysisLogs *Frame1;
-extern effectsProperties *Frame2;
+AnalysisLogs *Frame1;
+effectsProperties *Frame2;
+GameSettings *Frame3;
 
-double attackTimeParts=0;
-double attackHits=0;
-double Withstanded, IAS, BATD;
+extern void GetGameRules();
 
-wxIntegerValidator<unsigned long>numsOnlyValidator(NULL, wxNUM_VAL_THOUSANDS_SEPARATOR);
-wxIntegerValidator<long>numsOnlyValidatorSigned(NULL, wxNUM_VAL_THOUSANDS_SEPARATOR);
-wxFloatingPointValidator<double>numsFloatOnlyValidator(NULL, wxNUM_VAL_NO_TRAILING_ZEROES);
-wxFloatingPointValidator<double>numsFloatOnlyValidatorSigned(NULL, wxNUM_VAL_NO_TRAILING_ZEROES);
-
-//helper functions
-enum wxbuildinfoformat {
-    short_f, long_f };
-
-wxString wxbuildinfo(wxbuildinfoformat format)
-{
-    wxString wxbuild(wxVERSION_STRING);
-
-    if (format == long_f )
-    {
-#if defined(__WXMSW__)
-        wxbuild << _T("-Windows");
-#elif defined(__UNIX__)
-        wxbuild << _T("-Linux");
-#endif
-
-#if wxUSE_UNICODE
-        wxbuild << _T("-Unicode build");
-#else
-        wxbuild << _T("-ANSI build");
-#endif // wxUSE_UNICODE
-    }
-
-    return wxbuild;
-}
+double Withstanded;
 
 //(*IdInit(DamageAnalysisFrame)
 const long DamageAnalysisFrame::ID_CHOICE1 = wxNewId();
-const long DamageAnalysisFrame::ID_BUTTON1 = wxNewId();
 const long DamageAnalysisFrame::ID_TEXTCTRL1 = wxNewId();
 const long DamageAnalysisFrame::ID_STATICTEXT1 = wxNewId();
 const long DamageAnalysisFrame::ID_STATICTEXT2 = wxNewId();
@@ -120,12 +91,29 @@ const long DamageAnalysisFrame::ID_STATICTEXT18 = wxNewId();
 const long DamageAnalysisFrame::ID_TEXTCTRL17 = wxNewId();
 const long DamageAnalysisFrame::ID_LISTCTRL1 = wxNewId();
 const long DamageAnalysisFrame::ID_LISTCTRL2 = wxNewId();
+const long DamageAnalysisFrame::ID_BITMAPBUTTON1 = wxNewId();
+const long DamageAnalysisFrame::ID_BITMAPBUTTON3 = wxNewId();
+const long DamageAnalysisFrame::ID_BITMAPBUTTON4 = wxNewId();
+const long DamageAnalysisFrame::ID_BITMAPBUTTON5 = wxNewId();
+const long DamageAnalysisFrame::ID_CHOICE2 = wxNewId();
+const long DamageAnalysisFrame::ID_STATICTEXT19 = wxNewId();
+const long DamageAnalysisFrame::ID_TEXTCTRL18 = wxNewId();
+const long DamageAnalysisFrame::ID_STATICTEXT20 = wxNewId();
+const long DamageAnalysisFrame::ID_TEXTCTRL19 = wxNewId();
+const long DamageAnalysisFrame::ID_STATICTEXT21 = wxNewId();
+const long DamageAnalysisFrame::ID_TEXTCTRL20 = wxNewId();
+const long DamageAnalysisFrame::ID_STATICTEXT22 = wxNewId();
+const long DamageAnalysisFrame::ID_TEXTCTRL21 = wxNewId();
+const long DamageAnalysisFrame::ID_STATICTEXT23 = wxNewId();
+const long DamageAnalysisFrame::ID_STATICTEXT24 = wxNewId();
+const long DamageAnalysisFrame::ID_TEXTCTRL22 = wxNewId();
+const long DamageAnalysisFrame::ID_TEXTCTRL23 = wxNewId();
+const long DamageAnalysisFrame::ID_BITMAPBUTTON2 = wxNewId();
 const long DamageAnalysisFrame::ID_PANEL1 = wxNewId();
-const long DamageAnalysisFrame::ID_BUTTON2 = wxNewId();
-const long DamageAnalysisFrame::ID_PANEL2 = wxNewId();
 const long DamageAnalysisFrame::ID_PANEL3 = wxNewId();
 const long DamageAnalysisFrame::ID_NOTEBOOK1 = wxNewId();
 const long DamageAnalysisFrame::idMenuQuit = wxNewId();
+const long DamageAnalysisFrame::idSettings = wxNewId();
 const long DamageAnalysisFrame::idMenuAbout = wxNewId();
 const long DamageAnalysisFrame::ID_STATUSBAR1 = wxNewId();
 //*)
@@ -150,15 +138,19 @@ DamageAnalysisFrame::DamageAnalysisFrame(wxWindow* parent,wxWindowID id)
     wxMenuBar* MenuBar1;
     wxMenu* Menu2;
 
-    Create(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX, _T("wxID_ANY"));
+    Create(parent, wxID_ANY, _("Damage analysis Tool v0.4"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxNO_BORDER, _T("wxID_ANY"));
     SetClientSize(wxSize(700,510));
     SetMinSize(wxSize(700,510));
     SetMaxSize(wxSize(700,510));
-    Notebook1 = new wxNotebook(this, ID_NOTEBOOK1, wxPoint(56,56), wxDefaultSize, 0, _T("ID_NOTEBOOK1"));
-    Panel1 = new wxPanel(Notebook1, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
+    {
+    	wxIcon FrameIcon;
+    	FrameIcon.CopyFromBitmap(wxBitmap(wxImage(_T("resources\\myIcon.png"))));
+    	SetIcon(FrameIcon);
+    }
+    Notebook1 = new wxNotebook(this, ID_NOTEBOOK1, wxPoint(56,56), wxDefaultSize, wxNO_BORDER, _T("ID_NOTEBOOK1"));
+    Panel1 = new wxPanel(Notebook1, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxNO_BORDER|wxTAB_TRAVERSAL, _T("ID_PANEL1"));
     Panel1->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_MENU));
     Choice1 = new wxChoice(Panel1, ID_CHOICE1, wxPoint(16,16), wxSize(168,21), 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE1"));
-    Button1 = new wxButton(Panel1, ID_BUTTON1, _("Analyze"), wxPoint(560,376), wxSize(115,31), 0, wxDefaultValidator, _T("ID_BUTTON1"));
     LevelInput = new wxTextCtrl(Panel1, ID_TEXTCTRL1, _("1"), wxPoint(224,16), wxSize(54,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL1"));
     LvlInputText = new wxStaticText(Panel1, ID_STATICTEXT1, _("Level"), wxPoint(192,16), wxDefaultSize, 0, _T("ID_STATICTEXT1"));
     StatStrText = new wxStaticText(Panel1, ID_STATICTEXT2, _("STR"), wxPoint(24,48), wxDefaultSize, 0, _T("ID_STATICTEXT2"));
@@ -168,51 +160,80 @@ DamageAnalysisFrame::DamageAnalysisFrame(wxWindow* parent,wxWindowID id)
     StatIntInput = new wxTextCtrl(Panel1, ID_TEXTCTRL4, _("0"), wxPoint(192,48), wxSize(40,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL4"));
     StatHPRegenInput = new wxTextCtrl(Panel1, ID_TEXTCTRL5, _("0"), wxPoint(176,88), wxSize(48,21), wxTE_PROCESS_ENTER, numsFloatOnlyValidatorSigned, _T("ID_TEXTCTRL5"));
     StatMPRegenInput = new wxTextCtrl(Panel1, ID_TEXTCTRL7, _("0"), wxPoint(176,112), wxSize(48,21), wxTE_PROCESS_ENTER, numsFloatOnlyValidatorSigned, _T("ID_TEXTCTRL7"));
-    RegenText = new wxStaticText(Panel1, ID_STATICTEXT5, _("Regeneration"), wxPoint(168,72), wxDefaultSize, 0, _T("ID_STATICTEXT5"));
+    RegenText = new wxStaticText(Panel1, ID_STATICTEXT5, _("Regeneration"), wxPoint(166,72), wxDefaultSize, 0, _T("ID_STATICTEXT5"));
     StatIntText = new wxStaticText(Panel1, ID_STATICTEXT4, _("INT"), wxPoint(168,48), wxDefaultSize, 0, _T("ID_STATICTEXT4"));
     StatHealthText = new wxStaticText(Panel1, ID_STATICTEXT8, _("Health"), wxPoint(24,88), wxDefaultSize, 0, _T("ID_STATICTEXT8"));
     StatManaText = new wxStaticText(Panel1, ID_STATICTEXT9, _("Mana"), wxPoint(32,112), wxDefaultSize, 0, _T("ID_STATICTEXT9"));
     StatHPInput = new wxTextCtrl(Panel1, ID_TEXTCTRL6, _("0"), wxPoint(64,88), wxSize(112,21), wxTE_PROCESS_ENTER, numsOnlyValidatorSigned, _T("ID_TEXTCTRL6"));
     StatMPInput = new wxTextCtrl(Panel1, ID_TEXTCTRL8, _("0"), wxPoint(64,112), wxSize(112,21), wxTE_PROCESS_ENTER, numsOnlyValidatorSigned, _T("ID_TEXTCTRL8"));
-    BaseAttackDamageText = new wxStaticText(Panel1, ID_STATICTEXT6, _("Base attack damage"), wxPoint(465,50), wxDefaultSize, 0, _T("ID_STATICTEXT6"));
-    BaseAttackDamageMinInput = new wxTextCtrl(Panel1, ID_TEXTCTRL9, _("0"), wxPoint(566,48), wxSize(48,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL9"));
-    BaseAttackDamageMaxInput = new wxTextCtrl(Panel1, ID_TEXTCTRL10, _("0"), wxPoint(625,48), wxSize(48,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL10"));
-    StaticText1 = new wxStaticText(Panel1, ID_STATICTEXT7, _("-"), wxPoint(617,50), wxDefaultSize, 0, _T("ID_STATICTEXT7"));
-    WhiteDamageInput = new wxTextCtrl(Panel1, ID_TEXTCTRL11, _("0"), wxPoint(592,72), wxSize(56,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL11"));
-    WhiteDamageText = new wxStaticText(Panel1, ID_STATICTEXT10, _("White damage"), wxPoint(515,75), wxDefaultSize, 0, _T("ID_STATICTEXT10"));
-    GreenDamageText = new wxStaticText(Panel1, ID_STATICTEXT11, _("Green[Bonus] damage"), wxPoint(477,98), wxDefaultSize, 0, _T("ID_STATICTEXT11"));
-    GreenDamageInput = new wxTextCtrl(Panel1, ID_TEXTCTRL12, _("0"), wxPoint(592,96), wxSize(56,21), wxTE_PROCESS_ENTER, numsOnlyValidatorSigned, _T("ID_TEXTCTRL12"));
-    BATText = new wxStaticText(Panel1, ID_STATICTEXT12, _("Base attack speed"), wxPoint(496,123), wxDefaultSize, 0, _T("ID_STATICTEXT12"));
-    BATInput = new wxTextCtrl(Panel1, ID_TEXTCTRL13, _("1.0"), wxPoint(592,120), wxSize(40,21), wxTE_PROCESS_ENTER, numsFloatOnlyValidator, _T("ID_TEXTCTRL13"));
-    AttackSpeedInput = new wxTextCtrl(Panel1, ID_TEXTCTRL14, _("100"), wxPoint(592,144), wxSize(48,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL14"));
-    AttackSpeedText = new wxStaticText(Panel1, ID_STATICTEXT13, _("Attack speed"), wxPoint(520,147), wxDefaultSize, 0, _T("ID_STATICTEXT13"));
+    BaseAttackDamageText = new wxStaticText(Panel1, ID_STATICTEXT6, _("Base attack damage"), wxPoint(452,96), wxDefaultSize, 0, _T("ID_STATICTEXT6"));
+    BaseAttackDamageMinInput = new wxTextCtrl(Panel1, ID_TEXTCTRL9, _("0"), wxPoint(560,96), wxSize(48,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL9"));
+    BaseAttackDamageMaxInput = new wxTextCtrl(Panel1, ID_TEXTCTRL10, _("0"), wxPoint(624,96), wxSize(48,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL10"));
+    StaticText1 = new wxStaticText(Panel1, ID_STATICTEXT7, _("-"), wxPoint(613,96), wxDefaultSize, 0, _T("ID_STATICTEXT7"));
+    WhiteDamageInput = new wxTextCtrl(Panel1, ID_TEXTCTRL11, _("0"), wxPoint(478,120), wxSize(56,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL11"));
+    WhiteDamageText = new wxStaticText(Panel1, ID_STATICTEXT10, _("Damage"), wxPoint(432,120), wxDefaultSize, 0, _T("ID_STATICTEXT10"));
+    GreenDamageText = new wxStaticText(Panel1, ID_STATICTEXT11, _("Bonus damage"), wxPoint(535,120), wxDefaultSize, 0, _T("ID_STATICTEXT11"));
+    GreenDamageInput = new wxTextCtrl(Panel1, ID_TEXTCTRL12, _("0"), wxPoint(616,120), wxSize(56,21), wxTE_PROCESS_ENTER, numsOnlyValidatorSigned, _T("ID_TEXTCTRL12"));
+    BATText = new wxStaticText(Panel1, ID_STATICTEXT12, _("Base attack time"), wxPoint(416,144), wxDefaultSize, 0, _T("ID_STATICTEXT12"));
+    BATInput = new wxTextCtrl(Panel1, ID_TEXTCTRL13, _("1.0"), wxPoint(512,144), wxSize(40,21), wxTE_PROCESS_ENTER, numsFloatOnlyValidator, _T("ID_TEXTCTRL13"));
+    AttackSpeedInput = new wxTextCtrl(Panel1, ID_TEXTCTRL14, _("100"), wxPoint(624,144), wxSize(48,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL14"));
+    AttackSpeedText = new wxStaticText(Panel1, ID_STATICTEXT13, _("Attack speed"), wxPoint(554,144), wxDefaultSize, 0, _T("ID_STATICTEXT13"));
     MagicalResistanceText = new wxStaticText(Panel1, ID_STATICTEXT14, _("Magical Resistance"), wxPoint(120,136), wxDefaultSize, 0, _T("ID_STATICTEXT14"));
-    MagicResistanceInput = new wxTextCtrl(Panel1, ID_TEXTCTRL15, _("0"), wxPoint(216,136), wxSize(48,21), wxTE_PROCESS_ENTER, numsOnlyValidatorSigned, _T("ID_TEXTCTRL15"));
-    StaticText2 = new wxStaticText(Panel1, ID_STATICTEXT15, _("%"), wxPoint(272,136), wxDefaultSize, 0, _T("ID_STATICTEXT15"));
-    WithstandInput = new wxTextCtrl(Panel1, ID_TEXTCTRL16, _("1"), wxPoint(344,96), wxSize(56,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL16"));
-    WithstandText = new wxStaticText(Panel1, ID_STATICTEXT16, _("Withstand"), wxPoint(288,96), wxDefaultSize, 0, _T("ID_STATICTEXT16"));
-    WithstandText2 = new wxStaticText(Panel1, ID_STATICTEXT17, _("seconds"), wxPoint(408,96), wxDefaultSize, 0, _T("ID_STATICTEXT17"));
-    ArmorText = new wxStaticText(Panel1, ID_STATICTEXT18, _("Armor"), wxPoint(32,136), wxDefaultSize, 0, _T("ID_STATICTEXT18"));
+    MagicResistanceInput = new wxTextCtrl(Panel1, ID_TEXTCTRL15, _("0"), wxPoint(225,136), wxSize(48,21), wxTE_PROCESS_ENTER, numsOnlyValidatorSigned, _T("ID_TEXTCTRL15"));
+    StaticText2 = new wxStaticText(Panel1, ID_STATICTEXT15, _("%"), wxPoint(274,136), wxDefaultSize, 0, _T("ID_STATICTEXT15"));
+    WithstandInput = new wxTextCtrl(Panel1, ID_TEXTCTRL16, _("10"), wxPoint(305,280), wxSize(56,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL16"));
+    WithstandText = new wxStaticText(Panel1, ID_STATICTEXT16, _("Withstand"), wxPoint(308,264), wxDefaultSize, 0, _T("ID_STATICTEXT16"));
+    WithstandText2 = new wxStaticText(Panel1, ID_STATICTEXT17, _("seconds"), wxPoint(312,300), wxDefaultSize, 0, _T("ID_STATICTEXT17"));
+    ArmorText = new wxStaticText(Panel1, ID_STATICTEXT18, _("Armor"), wxPoint(28,136), wxDefaultSize, 0, _T("ID_STATICTEXT18"));
     ArmorInput = new wxTextCtrl(Panel1, ID_TEXTCTRL17, _("0"), wxPoint(64,136), wxSize(48,21), wxTE_PROCESS_ENTER, numsOnlyValidatorSigned, _T("ID_TEXTCTRL17"));
-    attackEffectsCtrl = new wxListCtrl(Panel1, ID_LISTCTRL1, wxPoint(32,168), wxSize(216,232), wxLC_REPORT|wxLC_NO_HEADER|wxLC_SINGLE_SEL|wxVSCROLL, wxDefaultValidator, _T("ID_LISTCTRL1"));
-    wxFont attackEffectsCtrlFont(11,wxSWISS,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Arial"),wxFONTENCODING_DEFAULT);
+    attackEffectsCtrl = new wxListCtrl(Panel1, ID_LISTCTRL1, wxPoint(424,168), wxSize(216,232), wxLC_REPORT|wxLC_NO_HEADER|wxLC_SINGLE_SEL|wxVSCROLL, wxDefaultValidator, _T("ID_LISTCTRL1"));
+    wxFont attackEffectsCtrlFont(11,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL,false,_T("Arial"),wxFONTENCODING_DEFAULT);
     attackEffectsCtrl->SetFont(attackEffectsCtrlFont);
-    defenseEffectsCtrl = new wxListCtrl(Panel1, ID_LISTCTRL2, wxPoint(456,168), wxSize(216,192), wxLC_REPORT|wxLC_NO_HEADER|wxLC_SINGLE_SEL|wxVSCROLL, wxDefaultValidator, _T("ID_LISTCTRL2"));
-    wxFont defenseEffectsCtrlFont(11,wxSWISS,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Arial"),wxFONTENCODING_DEFAULT);
+    defenseEffectsCtrl = new wxListCtrl(Panel1, ID_LISTCTRL2, wxPoint(32,168), wxSize(216,232), wxLC_REPORT|wxLC_NO_HEADER|wxLC_SINGLE_SEL|wxVSCROLL, wxDefaultValidator, _T("ID_LISTCTRL2"));
+    wxFont defenseEffectsCtrlFont(11,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL,false,_T("Arial"),wxFONTENCODING_DEFAULT);
     defenseEffectsCtrl->SetFont(defenseEffectsCtrlFont);
-    Panel2 = new wxPanel(Notebook1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
-    Panel2->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_MENU));
-    Button2 = new wxButton(Panel2, ID_BUTTON2, _("Generate"), wxPoint(560,376), wxSize(115,31), 0, wxDefaultValidator, _T("ID_BUTTON2"));
-    Panel3 = new wxPanel(Notebook1, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL3"));
+    aECBButtonAdd = new wxBitmapButton(Panel1, ID_BITMAPBUTTON1, wxBitmap(wxImage(_T("resources\\plus26.png"))), wxPoint(644,168), wxSize(28,28), wxBU_AUTODRAW|wxNO_BORDER|wxTRANSPARENT_WINDOW, wxDefaultValidator, _T("ID_BITMAPBUTTON1"));
+    aECBButtonAdd->SetBitmapSelected(wxBitmap(wxImage(_T("resources\\plusd26.png"))));
+    aECBButtonAdd->SetToolTip(_("Add new effect"));
+    dECBButtonAdd = new wxBitmapButton(Panel1, ID_BITMAPBUTTON3, wxBitmap(wxImage(_T("resources\\plus26.png"))), wxPoint(252,168), wxSize(28,28), wxBU_AUTODRAW|wxNO_BORDER|wxTRANSPARENT_WINDOW, wxDefaultValidator, _T("ID_BITMAPBUTTON3"));
+    dECBButtonAdd->SetBitmapSelected(wxBitmap(wxImage(_T("resources\\plusd26.png"))));
+    dECBButtonAdd->SetToolTip(_("Add new effect"));
+    dECBButtonRemove = new wxBitmapButton(Panel1, ID_BITMAPBUTTON4, wxBitmap(wxImage(_T("resources\\cross26.png"))), wxPoint(252,200), wxSize(28,28), wxBU_AUTODRAW|wxNO_BORDER|wxTRANSPARENT_WINDOW, wxDefaultValidator, _T("ID_BITMAPBUTTON4"));
+    dECBButtonRemove->SetBitmapSelected(wxBitmap(wxImage(_T("resources\\crossd26.png"))));
+    dECBButtonRemove->SetToolTip(_("Remove selected effect"));
+    BitmapButton1 = new wxBitmapButton(Panel1, ID_BITMAPBUTTON5, wxBitmap(wxImage(_T("resources\\Analyze.png"))), wxPoint(280,352), wxSize(112,45), wxBU_AUTODRAW|wxNO_BORDER|wxTRANSPARENT_WINDOW, wxDefaultValidator, _T("ID_BITMAPBUTTON5"));
+    BitmapButton1->SetBitmapSelected(wxBitmap(wxImage(_T("resources\\Analyzed.png"))));
+    BitmapButton1->SetToolTip(_("Run analyze process"));
+    Choice2 = new wxChoice(Panel1, ID_CHOICE2, wxPoint(416,16), wxSize(168,21), 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE2"));
+    LvlInputText2 = new wxStaticText(Panel1, ID_STATICTEXT19, _("Level"), wxPoint(592,16), wxDefaultSize, 0, _T("ID_STATICTEXT19"));
+    LevelInput2 = new wxTextCtrl(Panel1, ID_TEXTCTRL18, _("1"), wxPoint(624,16), wxSize(54,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL18"));
+    StatStrText2 = new wxStaticText(Panel1, ID_STATICTEXT20, _("STR"), wxPoint(464,48), wxDefaultSize, 0, _T("ID_STATICTEXT20"));
+    StatStrInput2 = new wxTextCtrl(Panel1, ID_TEXTCTRL19, _("0"), wxPoint(488,48), wxSize(40,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL19"));
+    StatAgiText2 = new wxStaticText(Panel1, ID_STATICTEXT21, _("AGI"), wxPoint(536,48), wxDefaultSize, 0, _T("ID_STATICTEXT21"));
+    StatAgiInput2 = new wxTextCtrl(Panel1, ID_TEXTCTRL20, _("0"), wxPoint(560,48), wxSize(40,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL20"));
+    StatIntText2 = new wxStaticText(Panel1, ID_STATICTEXT22, _("INT"), wxPoint(608,48), wxDefaultSize, 0, _T("ID_STATICTEXT22"));
+    StatIntInput2 = new wxTextCtrl(Panel1, ID_TEXTCTRL21, _("0"), wxPoint(632,48), wxSize(40,21), wxTE_PROCESS_ENTER, numsOnlyValidator, _T("ID_TEXTCTRL21"));
+    StatHealthText2 = new wxStaticText(Panel1, ID_STATICTEXT23, _("Health"), wxPoint(368,72), wxDefaultSize, 0, _T("ID_STATICTEXT23"));
+    StatManaText2 = new wxStaticText(Panel1, ID_STATICTEXT24, _("Mana"), wxPoint(528,72), wxDefaultSize, 0, _T("ID_STATICTEXT24"));
+    StatMPInput2 = new wxTextCtrl(Panel1, ID_TEXTCTRL22, _("0"), wxPoint(560,72), wxSize(112,21), wxTE_PROCESS_ENTER, numsOnlyValidatorSigned, _T("ID_TEXTCTRL22"));
+    StatHPInput2 = new wxTextCtrl(Panel1, ID_TEXTCTRL23, _("0"), wxPoint(408,72), wxSize(112,21), wxTE_PROCESS_ENTER, numsOnlyValidatorSigned, _T("ID_TEXTCTRL23"));
+    aECBButtonRemove = new wxBitmapButton(Panel1, ID_BITMAPBUTTON2, wxBitmap(wxImage(_T("resources\\cross26.png"))), wxPoint(644,200), wxSize(28,28), wxBU_AUTODRAW|wxNO_BORDER|wxTRANSPARENT_WINDOW, wxDefaultValidator, _T("ID_BITMAPBUTTON2"));
+    aECBButtonRemove->SetBitmapSelected(wxBitmap(wxImage(_T("resources\\crossd26.png"))));
+    aECBButtonRemove->SetToolTip(_("Remove selected effect"));
+    Panel3 = new wxPanel(Notebook1, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxNO_BORDER|wxTAB_TRAVERSAL, _T("ID_PANEL3"));
+    Panel3->Disable();
     Panel3->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_MENU));
-    Notebook1->AddPage(Panel1, _("Damage"), true);
-    Notebook1->AddPage(Panel2, _("Statistics"), false);
-    Notebook1->AddPage(Panel3, _("Mana cost"), false);
+    Notebook1->AddPage(Panel1, _("Damage analysis"), true);
+    Notebook1->AddPage(Panel3, _("Mana cost analysis"), false);
     MenuBar1 = new wxMenuBar();
     Menu1 = new wxMenu();
     MenuItem1 = new wxMenuItem(Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
     Menu1->Append(MenuItem1);
     MenuBar1->Append(Menu1, _("&File"));
+    Menu3 = new wxMenu();
+    MenuItem3 = new wxMenuItem(Menu3, idSettings, _("Game engine\tF3"), _("Open game engine related settings"), wxITEM_NORMAL);
+    Menu3->Append(MenuItem3);
+    MenuBar1->Append(Menu3, _("Settings"));
     Menu2 = new wxMenu();
     MenuItem2 = new wxMenuItem(Menu2, idMenuAbout, _("About\tF1"), _("Show info about this application"), wxITEM_NORMAL);
     Menu2->Append(MenuItem2);
@@ -224,10 +245,8 @@ DamageAnalysisFrame::DamageAnalysisFrame(wxWindow* parent,wxWindowID id)
     StatusBar1->SetFieldsCount(1,__wxStatusBarWidths_1);
     StatusBar1->SetStatusStyles(1,__wxStatusBarStyles_1);
     SetStatusBar(StatusBar1);
-    SingleInstanceChecker1.Create(wxTheApp->GetAppName() + _T("_") + wxGetUserId() + _T("_Guard"));
 
     Connect(ID_CHOICE1,wxEVT_COMMAND_CHOICE_SELECTED,(wxObjectEventFunction)&DamageAnalysisFrame::OnChoice1Select);
-    Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&DamageAnalysisFrame::OnButton1Click1);
     Connect(ID_TEXTCTRL1,wxEVT_COMMAND_TEXT_ENTER,(wxObjectEventFunction)&DamageAnalysisFrame::OnLevelInputTextEnter);
     Connect(ID_TEXTCTRL2,wxEVT_COMMAND_TEXT_ENTER,(wxObjectEventFunction)&DamageAnalysisFrame::OnStatStrInputTextEnter);
     Connect(ID_TEXTCTRL3,wxEVT_COMMAND_TEXT_ENTER,(wxObjectEventFunction)&DamageAnalysisFrame::OnStatAgiInputTextEnter);
@@ -247,15 +266,30 @@ DamageAnalysisFrame::DamageAnalysisFrame(wxWindow* parent,wxWindowID id)
     Connect(ID_TEXTCTRL17,wxEVT_COMMAND_TEXT_ENTER,(wxObjectEventFunction)&DamageAnalysisFrame::OnArmorInputTextEnter);
     Connect(ID_LISTCTRL1,wxEVT_COMMAND_LIST_ITEM_ACTIVATED,(wxObjectEventFunction)&DamageAnalysisFrame::OnattackEffectsCtrlItemActivated);
     Connect(ID_LISTCTRL2,wxEVT_COMMAND_LIST_ITEM_ACTIVATED,(wxObjectEventFunction)&DamageAnalysisFrame::OndefenseEffectsCtrlItemActivated2);
+    Connect(ID_BITMAPBUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&DamageAnalysisFrame::OnaECBButtonAddClick);
+    Connect(ID_BITMAPBUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&DamageAnalysisFrame::OndECBButtonAddClick);
+    Connect(ID_BITMAPBUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&DamageAnalysisFrame::OndECBButtonRemoveClick);
+    Connect(ID_BITMAPBUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&DamageAnalysisFrame::OnButton1Click1);
+    Connect(ID_CHOICE2,wxEVT_COMMAND_CHOICE_SELECTED,(wxObjectEventFunction)&DamageAnalysisFrame::OnChoice2Select1);
+    Connect(ID_TEXTCTRL18,wxEVT_COMMAND_TEXT_ENTER,(wxObjectEventFunction)&DamageAnalysisFrame::OnLevelInput2TextEnter);
+    Connect(ID_TEXTCTRL19,wxEVT_COMMAND_TEXT_ENTER,(wxObjectEventFunction)&DamageAnalysisFrame::OnStatStrInput2TextEnter);
+    Connect(ID_TEXTCTRL20,wxEVT_COMMAND_TEXT_ENTER,(wxObjectEventFunction)&DamageAnalysisFrame::OnStatAgiInput2TextEnter);
+    Connect(ID_TEXTCTRL21,wxEVT_COMMAND_TEXT_ENTER,(wxObjectEventFunction)&DamageAnalysisFrame::OnStatIntInput2TextEnter);
+    Connect(ID_TEXTCTRL22,wxEVT_COMMAND_TEXT_ENTER,(wxObjectEventFunction)&DamageAnalysisFrame::OnStatMPInput2TextEnter);
+    Connect(ID_TEXTCTRL23,wxEVT_COMMAND_TEXT_ENTER,(wxObjectEventFunction)&DamageAnalysisFrame::OnStatHPInput2TextEnter);
+    Connect(ID_BITMAPBUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&DamageAnalysisFrame::OnaECBButtonRemoveClick);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&DamageAnalysisFrame::OnQuit);
+    Connect(idSettings,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&DamageAnalysisFrame::OnMenuSettingsSelected);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&DamageAnalysisFrame::OnAbout);
     //*)
+    //Initializing additional windows
+    Frame1=new AnalysisLogs(this,wxNewId());
+    Frame2=new effectsProperties(this,wxNewId());
+    Frame3=new GameSettings(this,wxNewId());
     //Initializing main window   Initializing main window   Initializing main window   Initializing main window
     attackEffectsChoice2 = new wxChoice(attackEffectsCtrl, ID_CHOICE3, wxPoint(0,0), wxSize(176,21), 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE3"));
     defenseEffectsChoice2 = new wxChoice(defenseEffectsCtrl, ID_CHOICE4, wxPoint(0,0), wxSize(176,21), 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE4"));
-    attackEffectsChoice2->Bind(wxEVT_COMMAND_CHOICE_SELECTED, &DamageAnalysisFrame::OnChoice3Select, this);
     EffectChoiceFill();
-    defenseEffectsChoice2->Bind(wxEVT_COMMAND_CHOICE_SELECTED, &DamageAnalysisFrame::OnChoice4Select, this);
     attackEffectsCtrl->InsertColumn(0, _("Effect name"));
     defenseEffectsCtrl->InsertColumn(0, _("Effect name"));
     attackEffectsCtrl->SetColumnWidth(0,215);
@@ -280,24 +314,33 @@ DamageAnalysisFrame::DamageAnalysisFrame(wxWindow* parent,wxWindowID id)
     ArmorInput->Bind(wxEVT_KILL_FOCUS, &DamageAnalysisFrame::OnArmorLostFocus, this);
     MagicResistanceInput->Bind(wxEVT_KILL_FOCUS, &DamageAnalysisFrame::OnMagicResistanceLostFocus, this);
     WithstandInput->Bind(wxEVT_KILL_FOCUS, &DamageAnalysisFrame::OnWithstandLostFocus, this);
-    Panel1->Bind(wxEVT_CHAR_HOOK, &DamageAnalysisFrame::OnKeyDown, this);
-    attackEffectsChoice2->Bind(wxEVT_MOUSEWHEEL, &DamageAnalysisFrame::OnMousewheel, this);
-    defenseEffectsChoice2->Bind(wxEVT_MOUSEWHEEL, &DamageAnalysisFrame::OnMousewheel, this);
+    LevelInput2->Bind(wxEVT_KILL_FOCUS, &DamageAnalysisFrame::OnLevel2LostFocus, this);
+    StatStrInput2->Bind(wxEVT_KILL_FOCUS, &DamageAnalysisFrame::OnStatStr2LostFocus, this);
+    StatAgiInput2->Bind(wxEVT_KILL_FOCUS, &DamageAnalysisFrame::OnStatAgi2LostFocus, this);
+    StatIntInput2->Bind(wxEVT_KILL_FOCUS, &DamageAnalysisFrame::OnStatInt2LostFocus, this);
+    StatHPInput2->Bind(wxEVT_KILL_FOCUS, &DamageAnalysisFrame::OnStatHP2LostFocus, this);
+    StatMPInput2->Bind(wxEVT_KILL_FOCUS, &DamageAnalysisFrame::OnStatMP2LostFocus, this);
 
     wxInitAllImageHandlers();
     SetClientSize(wxSize(700,510));
 
-    heroLoadFile(heroVector);
-    unsigned i;
-    for (i=0;i<heroVector.size();i++)
+    heroLoadFile(heroVector);// Load up hero data into the hero lists
+    for (unsigned i=0;i<heroVector.size();i++)
     {
         heroUnit *heroPtr=&heroVector[i];
         Choice1->Append(heroVector[i].unitName,heroPtr);
+        Choice2->Append(heroVector[i].unitName,heroPtr);
     }
+    attackEffects.reserve(20);
+    defenceEffects.reserve(20);
     Choice1->Select(0);
-    BaseAttackDamageMinInputWas=BaseAttackDamageMinInput->GetValue();
-    BaseAttackDamageMaxInputWas=BaseAttackDamageMaxInput->GetValue();
+    Choice2->Select(0);
+    attackEffectsChoice2->Select(0);
+    defenseEffectsChoice2->Select(0);
+    BaseAttackDamageMinInputWas='0';
+    BaseAttackDamageMaxInputWas='0';
     heroTemp=(heroUnit *)Choice1->GetClientData(Choice1->GetSelection());
+    heroAttTemp=(heroUnit *)Choice2->GetClientData(Choice2->GetSelection());
     Panel1->SetFocus();
 }
 
@@ -305,8 +348,6 @@ DamageAnalysisFrame::~DamageAnalysisFrame()
 {
     //(*Destroy(DamageAnalysisFrame)
     //*)
-//    Frame1->Destroy();
-//    Frame2->Destroy();
 }
 
 void DamageAnalysisFrame::OnQuit(wxCommandEvent& event)
@@ -316,8 +357,7 @@ void DamageAnalysisFrame::OnQuit(wxCommandEvent& event)
 
 void DamageAnalysisFrame::OnAbout(wxCommandEvent& event)
 {
-    wxString msg = wxbuildinfo(long_f);
-    wxMessageBox(msg, _("Welcome to..."));
+    wxMessageBox(_("This program was made with the original game mechanics in mind.\nAll the data is approximate.\nFor additional information or help, contact me on Github."), _("Damage Analysis Tool v0.4"));
 }
 
 void DamageAnalysisFrame::OnClose(wxCloseEvent& event)
@@ -325,179 +365,556 @@ void DamageAnalysisFrame::OnClose(wxCloseEvent& event)
     Close();
 }
 
-void DamageAnalysisFrame::OnButton1Click(wxCommandEvent& event)
+void DamageAnalysisFrame::OnButton1Click1(wxCommandEvent& event)
 {
+    Frame1->RunAnalysis();
 }
 
-void DamageAnalysisFrame::OnTextCtrl1Text(wxCommandEvent& event)
+void DamageAnalysisFrame::OnWithstandLostFocus(wxFocusEvent& event)
 {
+    if (wxIsEmpty(WithstandInput->GetValue()) || WithstandInput->GetValue()=="0")
+    {
+        WithstandInput->SetValue("1");
+    }
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnWithstandInputTextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnWithstandLostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::EffectChoiceFill()
+{
+    // Заполнение чойзов с эффектами данными из карт.
+    for (std::map<std::string,basic_effect *>::iterator it=effectMapAttack.begin(); it!=effectMapAttack.end(); ++it)
+    {
+        attackEffectsChoice2->Append(it->second->Name,&(*it->second));
+    }
+    for (std::map<std::string,basic_effect *>::iterator it=effectMapDefense.begin(); it!=effectMapDefense.end(); ++it)
+    {
+        defenseEffectsChoice2->Append(it->second->Name,&(*it->second));
+    }
+    return;
+}
+
+/////////////////////////////////////////////////DEFENDER/////////////////////////////////////////////////////////////
+void DamageAnalysisFrame::OnChoice1Select(wxCommandEvent& event)
+{
+    heroTemp=(heroUnit *)Choice1->GetClientData(Choice1->GetSelection());
+    HeroFillForms();
+    event.Skip();
+}
+
+void DamageAnalysisFrame::HeroFillForms()
+{
+    //Пересчёт уровня
+    int Level=wxAtoi(LevelInput->GetValue());
+    // ___ Processing stats:
+    if (Level>1)
+    {
+        // Подгон статов в UI.
+        StatStrInput->SetValue(wxString::FromDouble(heroTemp->AttributeBaseStrength+(heroTemp->AttributeStrengthGain*(Level-1)),0));
+        StatAgiInput->SetValue(wxString::FromDouble(heroTemp->AttributeBaseAgility+(heroTemp->AttributeAgilityGain*(Level-1)),0));
+        StatIntInput->SetValue(wxString::FromDouble(heroTemp->AttributeBaseIntelligence+(heroTemp->AttributeIntelligenceGain*(Level-1)),0));
+    }
+    else
+    {
+        StatStrInput->SetValue(wxString::FromDouble(heroTemp->AttributeBaseStrength,0));
+        StatAgiInput->SetValue(wxString::FromDouble(heroTemp->AttributeBaseAgility,0));
+        StatIntInput->SetValue(wxString::FromDouble(heroTemp->AttributeBaseIntelligence,0));
+    }
+    // ___ Magic resist
+    MagicResistanceInput->SetValue(wxString::FromDouble(heroTemp->MagicalResistance,0));
+    // ___ Filling UI with fresh information:
+    HeroFillForms(Strenght);
+    HeroFillForms(Agility);
+    HeroFillForms(Intelligence);
+    return;
+}
+
+void DamageAnalysisFrame::HeroFillForms(StatTypes checkStat)
+{
+    if (checkStat==Strenght)
+    {
+        StatHPInput->SetValue(wxString::Format(wxT("%i"),heroTemp->StatusHealth+(wxAtoi(StatStrInput->GetValue())*gamerule_HPPerStr)));
+        StatHPRegenInput->SetValue(wxString::FromDouble(heroTemp->StatusHealthRegen+((double)(wxAtoi(StatStrInput->GetValue()))*gamerule_HPRegenPerStr),2));
+    }
+    else if(checkStat==Agility)
+    {
+        ArmorInput->SetValue(wxString::FromDouble(heroTemp->ArmorPhysical+wxAtoi(StatAgiInput->GetValue())*gamerule_ArmorPerAgi,0));
+    }
+    else if (checkStat==Intelligence)
+    {
+        StatMPInput->SetValue(wxString::Format(wxT("%i"),heroTemp->StatusMana+(wxAtoi(StatIntInput->GetValue())*gamerule_MPPerInt)));
+        StatMPRegenInput->SetValue(wxString::FromDouble(heroTemp->StatusManaRegen+((double)(wxAtoi(StatIntInput->GetValue()))*gamerule_MPRegenPerInt),2));
+    }
+    return;
+}
+
+void DamageAnalysisFrame::OnLevelInputTextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnLevelLostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnLevelLostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(LevelInput->GetValue()))
+    {
+        LevelInput->SetValue("1");
+    }
+    HeroFillForms();
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatStrLostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(StatStrInput->GetValue()))
+    {
+        StatStrInput->SetValue("0");
+    }
+    HeroFillForms(Strenght);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatStrInputTextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnStatStrLostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatAgiLostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(StatAgiInput->GetValue()))
+    {
+        StatAgiInput->SetValue("0");
+    }
+    HeroFillForms(Agility);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatAgiInputTextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnStatAgiLostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatIntLostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(StatIntInput->GetValue()))
+    {
+        StatIntInput->SetValue("0");
+    }
+    HeroFillForms(Intelligence);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatIntInputTextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnStatIntLostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatHPLostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(StatHPInput->GetValue()))
+    {
+        StatHPInput->SetValue("0");
+    }
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatHPInputTextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnStatHPLostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatMPLostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(StatMPInput->GetValue()))
+    {
+        StatMPInput->SetValue("0");
+    }
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatMPInputTextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnStatMPLostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatHPRegenLostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(StatHPRegenInput->GetValue()))
+    {
+        StatHPRegenInput->SetValue("0");
+    }
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatHPRegenInputTextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnStatHPRegenLostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatMPRegenLostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(StatMPRegenInput->GetValue()))
+    {
+        StatMPRegenInput->SetValue("0");
+    }
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatMPRegenInputTextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnStatMPRegenLostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnArmorLostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(ArmorInput->GetValue()))
+    {
+        ArmorInput->SetValue("0");
+    }
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnArmorInputTextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnArmorLostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnMagicResistanceInputTextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnMagicResistanceLostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnMagicResistanceLostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(MagicResistanceInput->GetValue()))
+    {
+        MagicResistanceInput->SetValue("0");
+    }
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OndefenseEffectsCtrlItemActivated2(wxListEvent& event)
+{
+    int foundIndex;
+    if ((foundIndex=defenseEffectsCtrl->GetNextItem(0, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED)) != wxNOT_FOUND)
+    {
+        if (defenseEffectsCtrl->GetItemData(foundIndex)!=NULL)
+        {
+            // Эта функция будет всегда игнорировать самый первый элемент в списке, т.к. он пустышка под выпадающее меню.
+            Frame2->currEditObject=(void *)event.GetItem().GetData();
+            ((basic_effect *)(Frame2->currEditObject))->FillPropertiesGrid(Frame2);
+            Frame2->Show();
+            Frame2->Restore();
+            Frame2->Raise();
+        }
+    }
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OndECBButtonAddClick(wxCommandEvent& event)
+{
+    // Добавление эффекта получением всех данных из чойза, и на их базе раскладывая новый элемент.
+    defenceEffects.push_back(((basic_effect *)defenseEffectsChoice2->GetClientData(defenseEffectsChoice2->GetSelection()))->getnewCopy());
+    wxListItem tmpListItem;
+    tmpListItem.SetId(wxNewId());
+    std::vector<basic_effect *>::iterator tempVecIt2=defenceEffects.end()-1;
+    tmpListItem.SetText((*tempVecIt2)->Name);
+    tmpListItem.SetData(&(**tempVecIt2));
+    defenseEffectsCtrl->InsertItem(tmpListItem);
+    defenseEffectsCtrl->EnsureVisible(defenseEffectsCtrl->GetItemCount()-1);
+    defenseEffectsCtrl->SetItemState(defenseEffectsCtrl->GetItemCount()-1, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+}
+
+void DamageAnalysisFrame::OndECBButtonRemoveClick(wxCommandEvent& event)
+{
+    std::vector<basic_effect *>::iterator tempVecIt2=defenceEffects.end()-1;
+    int i=defenseEffectsCtrl->GetNextItem(-1,wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+    if (i!=-1 && i!=0)
+    {
+        int answer = wxMessageBox("Are you sure you want to delete this effect?", "Deleting effect", wxOK | wxCANCEL | wxCANCEL_DEFAULT | wxICON_WARNING, this);
+        if (answer == wxOK)
+        {
+            int vectSize2=defenceEffects.size()-1;
+            for (int j=defenceEffects.size()-1;vectSize2==defenceEffects.size()-1;j--,tempVecIt2--)
+            {
+                if (isSameRefAddress((*(basic_effect *)defenseEffectsCtrl->GetItemData(i)),**tempVecIt2)==true)
+                {
+                    delete (basic_effect *)defenseEffectsCtrl->GetItemData(i);
+                    defenceEffects.erase(tempVecIt2);
+                    defenseEffectsCtrl->DeleteItem(i);
+                    Frame2->Hide();
+                }
+            }
+        }
+    }
+}
+
+/////////////////////////////////////////////////////ATTACKER///////////////////////////////////////////////////////
+void DamageAnalysisFrame::OnChoice2Select1(wxCommandEvent& event)
+{
+    heroAttTemp=(heroUnit *)Choice2->GetClientData(Choice2->GetSelection());
+    AttackerFillForms();
+    event.Skip();
+}
+
+void DamageAnalysisFrame::AttackerFillForms()
+{
+    int Level=wxAtoi(LevelInput2->GetValue());
+    // ___ Processing stats:
+    if (Level>1)
+    {
+        StatStrInput2->SetValue(wxString::FromDouble(heroAttTemp->AttributeBaseStrength+(heroAttTemp->AttributeStrengthGain*(Level-1)),0));
+        StatAgiInput2->SetValue(wxString::FromDouble(heroAttTemp->AttributeBaseAgility+(heroAttTemp->AttributeAgilityGain*(Level-1)),0));
+        StatIntInput2->SetValue(wxString::FromDouble(heroAttTemp->AttributeBaseIntelligence+(heroAttTemp->AttributeIntelligenceGain*(Level-1)),0));
+    }
+    else
+    {
+        StatStrInput2->SetValue(wxString::FromDouble(heroAttTemp->AttributeBaseStrength,0));
+        StatAgiInput2->SetValue(wxString::FromDouble(heroAttTemp->AttributeBaseAgility,0));
+        StatIntInput2->SetValue(wxString::FromDouble(heroAttTemp->AttributeBaseIntelligence,0));
+    }
+    BATInput->SetValue(wxString::FromDouble(heroAttTemp->AttackRate,2));
+    // ___ Filling UI with fresh information:
+    AttackerFillForms(Strenght);
+    AttackerFillForms(Agility);
+    AttackerFillForms(Intelligence);
+    return;
+}
+
+void DamageAnalysisFrame::AttackerFillForms(StatTypes checkStat)
+{
+    if (checkStat==Strenght)
+    {
+        StatHPInput2->SetValue(wxString::Format(wxT("%i"),heroAttTemp->StatusHealth+gamerule_HPPerStr*(wxAtoi(StatStrInput2->GetValue()))));
+        if (heroAttTemp->AttributePrimary=="DOTA_ATTRIBUTE_STRENGTH")
+        {
+            BaseAttackDamageMinInput->SetValue(wxString::FromDouble(heroAttTemp->AttackDamageMin+wxAtoi(StatStrInput2->GetValue()),0));
+            BaseAttackDamageMaxInput->SetValue(wxString::FromDouble(heroAttTemp->AttackDamageMax+wxAtoi(StatStrInput2->GetValue()),0));
+            WhiteDamageCount();
+        }
+    }
+    else if(checkStat==Agility)
+    {
+        AttackSpeedInput->SetValue(wxString::FromDouble(gamerule_StartIAS+wxAtoi(StatAgiInput2->GetValue()),0));
+        if (heroAttTemp->AttributePrimary=="DOTA_ATTRIBUTE_AGILITY")
+        {
+            BaseAttackDamageMinInput->SetValue(wxString::FromDouble(heroAttTemp->AttackDamageMin+wxAtoi(StatAgiInput2->GetValue()),0));
+            BaseAttackDamageMaxInput->SetValue(wxString::FromDouble(heroAttTemp->AttackDamageMax+wxAtoi(StatAgiInput2->GetValue()),0));
+            WhiteDamageCount();
+        }
+    }
+    else if (checkStat==Intelligence)
+    {
+        StatMPInput2->SetValue(wxString::Format(wxT("%i"),heroAttTemp->StatusMana+gamerule_MPPerInt*wxAtoi(StatIntInput2->GetValue())));
+        if (heroAttTemp->AttributePrimary=="DOTA_ATTRIBUTE_INTELLECT")
+        {
+            BaseAttackDamageMinInput->SetValue(wxString::FromDouble(heroAttTemp->AttackDamageMin+wxAtoi(StatIntInput2->GetValue()),0));
+            BaseAttackDamageMaxInput->SetValue(wxString::FromDouble(heroAttTemp->AttackDamageMax+wxAtoi(StatIntInput2->GetValue()),0));
+            WhiteDamageCount();
+        }
+    }
+    return;
+}
+
+void DamageAnalysisFrame::OnLevelInput2TextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnLevel2LostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnLevel2LostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(LevelInput2->GetValue()))
+    {
+        LevelInput2->SetValue("1");
+    }
+    AttackerFillForms();
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatStr2LostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(StatStrInput2->GetValue()))
+    {
+        StatStrInput2->SetValue("0");
+    }
+    AttackerFillForms(Strenght);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatStrInput2TextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnStatStr2LostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatAgi2LostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(StatAgiInput2->GetValue()))
+    {
+        StatAgiInput2->SetValue("0");
+    }
+    AttackerFillForms(Agility);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatAgiInput2TextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnStatAgi2LostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatInt2LostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(StatIntInput2->GetValue()))
+    {
+        StatIntInput2->SetValue("0");
+    }
+    AttackerFillForms(Intelligence);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatIntInput2TextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnStatInt2LostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatHP2LostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(StatHPInput2->GetValue()))
+    {
+        StatHPInput2->SetValue("0");
+    }
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatHPInput2TextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnStatHP2LostFocus(tmpEvt);
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatMP2LostFocus(wxFocusEvent& event)
+{
+    if (wxIsEmpty(StatMPInput2->GetValue()))
+    {
+        StatMPInput2->SetValue("0");
+    }
+    event.Skip();
+}
+
+void DamageAnalysisFrame::OnStatMPInput2TextEnter(wxCommandEvent& event)
+{
+    wxFocusEvent tmpEvt;
+    DamageAnalysisFrame::OnStatMP2LostFocus(tmpEvt);
+    event.Skip();
 }
 
 void DamageAnalysisFrame::OnBADamageMinLostFocus(wxFocusEvent& event)
 {
-wxString tmpDmg=BaseAttackDamageMinInput->GetValue();
-if (tmpDmg.IsSameAs(BaseAttackDamageMinInputWas))
-{
-    event.Skip();
-    return;
-}
-else
-{
-    addWhiteDmg=0;
-    WhiteDamageInput->SetValue('0');
     wxCommandEvent tmpEvt;
-    BaseAttackDamageMinInputWas=tmpDmg;
-    DamageAnalysisFrame::OnWhiteDamageInputText(tmpEvt);
-}
-event.Skip();
+    DamageAnalysisFrame::OnBaseAttackDamageMinInputText(tmpEvt);
+    event.Skip();
 }
 
 void DamageAnalysisFrame::OnBADamageMaxLostFocus(wxFocusEvent& event)
 {
-wxString tmpDmg=BaseAttackDamageMaxInput->GetValue();
-if (tmpDmg.IsSameAs(BaseAttackDamageMaxInputWas))
-{
-    event.Skip();
-    return;
-}
-else
-{
-    addWhiteDmg=0;
-    WhiteDamageInput->SetValue('0');
     wxCommandEvent tmpEvt;
-    BaseAttackDamageMaxInputWas=tmpDmg;
-    DamageAnalysisFrame::OnWhiteDamageInputText(tmpEvt);
-}
-event.Skip();
+    DamageAnalysisFrame::OnBaseAttackDamageMaxInputText(tmpEvt);
+    event.Skip();
 }
 
 void DamageAnalysisFrame::OnWhiteDamageLostFocus(wxFocusEvent& event)
 {
-wxCommandEvent tmpEvt;
-DamageAnalysisFrame::OnWhiteDamageInputText(tmpEvt);
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnButton1Click1(wxCommandEvent& event)
-{
-// ___ Generate hero data damage log ___ Generate hero data damage log ___ Generate hero data damage log ___ Generate hero data damage log
-Frame1->RunAnalysis();
+    wxCommandEvent tmpEvt;
+    DamageAnalysisFrame::OnWhiteDamageInputText(tmpEvt);
+    event.Skip();
 }
 
 void DamageAnalysisFrame::OnBaseAttackDamageMinInputText(wxCommandEvent& event)
 {
     wxString tmpDmg=BaseAttackDamageMinInput->GetValue();
-    if (tmpDmg.IsSameAs(BaseAttackDamageMinInputWas))
+    if (wxIsEmpty(tmpDmg))
     {
-        event.Skip();
-        return;
+        BaseAttackDamageMinInput->SetValue('0');
     }
-    else
+    else if (!tmpDmg.IsSameAs(BaseAttackDamageMinInputWas))
     {
-    addWhiteDmg=0;
-    WhiteDamageInput->SetValue('0');
-    BaseAttackDamageMinInputWas=tmpDmg;
-    DamageAnalysisFrame::OnWhiteDamageInputText(event);
+        BaseAttackDamageMinInputWas=tmpDmg;
     }
+    WhiteDamageCount();
     event.Skip();
 }
 
 void DamageAnalysisFrame::OnBaseAttackDamageMaxInputText(wxCommandEvent& event)
 {
     wxString tmpDmg=BaseAttackDamageMaxInput->GetValue();
-    if (tmpDmg.IsSameAs(BaseAttackDamageMaxInputWas))
+    if (wxIsEmpty(tmpDmg))
     {
-        event.Skip();
-        return;
+        BaseAttackDamageMaxInput->SetValue('0');
     }
-    else
+    else if (!tmpDmg.IsSameAs(BaseAttackDamageMaxInputWas))
     {
-    addWhiteDmg=0;
-    WhiteDamageInput->SetValue('0');
-    BaseAttackDamageMaxInputWas=tmpDmg;
-    DamageAnalysisFrame::OnWhiteDamageInputText(event);
+        BaseAttackDamageMaxInputWas=tmpDmg;
     }
+    WhiteDamageCount();
     event.Skip();
 }
 
 void DamageAnalysisFrame::OnWhiteDamageInputText(wxCommandEvent& event)
 {
-    double dmgTmpD,dmgTmpD2;
-    unsigned tmpInt;
-    wxString dmgTmp=WhiteDamageInput->GetValue();
-    DamageAnalysisFrame::WhiteDamageCount();
-    wxString dmgTmp2=WhiteDamageInput->GetValue();
-    dmgTmpD=wxAtof(dmgTmp);
-    dmgTmpD2=wxAtof(dmgTmp2);
-    if (dmgTmpD2>=dmgTmpD)
-    {
-        addWhiteDmg=0;
-        event.Skip();
-        return;
-    }
-    else if (dmgTmpD2<dmgTmpD)
-    {
-        addWhiteDmg=dmgTmpD-dmgTmpD2;
-        tmpInt=static_cast<unsigned int>(dmgTmpD2+addWhiteDmg);
-        wxString DamageString=wxString::Format(wxT("%i"),tmpInt);
-        WhiteDamageInput->SetValue(DamageString);
-        tmpInt=static_cast<unsigned int>(addWhiteDmg);
-        DamageString=wxString::Format(wxT("%i"),tmpInt);
-    }
     event.Skip();
 }
 
 void DamageAnalysisFrame::WhiteDamageCount()
 {
-double minimal, maximal,tmpDmg;
-unsigned dmgSum;
-wxString dmgMin=BaseAttackDamageMinInput->GetValue();
-wxString dmgMax=BaseAttackDamageMaxInput->GetValue();
-wxString dmgWhite=WhiteDamageInput->GetValue();
-if (wxIsEmpty(dmgMin))
-{
-    BaseAttackDamageMinInput->SetValue('0');
-}
-if (wxIsEmpty(dmgMax))
-{
-    BaseAttackDamageMaxInput->SetValue('0');
-}
-if (wxIsEmpty(dmgWhite))
-{
-    WhiteDamageInput->SetValue('0');
-}
-maximal=wxAtof(dmgMax);
-minimal=wxAtof(dmgMin);
-if (minimal<0)
-{
-    minimal=0;
-}
-if (maximal<0)
-{
-    maximal=0;
-}
-if (minimal==0 && maximal==0)
-{
-    return;
-}
-if (minimal==0)
-{
-    dmgSum=static_cast<unsigned int>(maximal);
-    wxString DamageString=wxString::Format(wxT("%i"),dmgSum);
+    double minimal=wxAtoi(BaseAttackDamageMinInput->GetValue());
+    double maximal=wxAtoi(BaseAttackDamageMaxInput->GetValue());
+    if (minimal==0)
+    {
+        wxString DamageString=wxString::Format(wxT("%i"),(unsigned)maximal);
+        WhiteDamageInput->SetValue(DamageString);
+        return;
+    }
+    if (maximal==0)
+    {
+        wxString DamageString=wxString::Format(wxT("%i"),(unsigned)minimal);
+        WhiteDamageInput->SetValue(DamageString);
+        return;
+    }
+    wxString DamageString=wxString::Format(wxT("%i"),(unsigned)((minimal+maximal)/2));
     WhiteDamageInput->SetValue(DamageString);
-    return;
-}
-if (maximal==0)
-{
-    dmgSum=static_cast<unsigned int>(minimal);
-    wxString DamageString=wxString::Format(wxT("%i"),dmgSum);
-    WhiteDamageInput->SetValue(DamageString);
-    return;
-}
-tmpDmg=(minimal+maximal)/2;
-dmgSum=static_cast<unsigned int>(tmpDmg);
-wxString DamageString=wxString::Format(wxT("%i"),dmgSum);
-WhiteDamageInput->SetValue(DamageString);
 }
 
 void DamageAnalysisFrame::OnGreenDamageInputTextEnter(wxCommandEvent& event)
@@ -509,11 +926,11 @@ void DamageAnalysisFrame::OnGreenDamageInputTextEnter(wxCommandEvent& event)
 
 void DamageAnalysisFrame::OnGreenDamageLostFocus(wxFocusEvent& event)
 {
-wxString checkEmptyS=GreenDamageInput->GetValue();
-if (wxIsEmpty(checkEmptyS))
-{
-    GreenDamageInput->SetValue('0');
-}
+    wxString checkEmptyS=GreenDamageInput->GetValue();
+    if (wxIsEmpty(checkEmptyS))
+    {
+        GreenDamageInput->SetValue('0');
+    }
     event.Skip();
 }
 
@@ -526,444 +943,91 @@ void DamageAnalysisFrame::OnBATInputTextEnter(wxCommandEvent& event)
 
 void DamageAnalysisFrame::OnBATLostFocus(wxFocusEvent& event)
 {
-wxString checkEmptyS=BATInput->GetValue();
-if (wxIsEmpty(checkEmptyS))
-{
-    BATInput->SetValue("1.0");
-}
-if (checkEmptyS.IsSameAs('0'))
-{
-    BATInput->SetValue("1.0");
-}
+    double tmpData=wxAtof(BATInput->GetValue());
+    if (wxIsEmpty(BATInput->GetValue()) || tmpData<=0)
+    {
+        BATInput->SetValue("1.0");
+    }
     event.Skip();
 }
 
 void DamageAnalysisFrame::OnAttackSpeedInputTextEnter(wxCommandEvent& event)
 {
-    wxFocusEvent tmpEvt;
-    DamageAnalysisFrame::OnAttackSpeedLostFocus(tmpEvt);
-    event.Skip();
+        wxFocusEvent tmpEvt;
+        DamageAnalysisFrame::OnAttackSpeedLostFocus(tmpEvt);
+        event.Skip();
 }
 
 void DamageAnalysisFrame::OnAttackSpeedLostFocus(wxFocusEvent& event)
 {
-wxString checkEmptyS=AttackSpeedInput->GetValue();
-if (wxIsEmpty(checkEmptyS))
-{
-    AttackSpeedInput->SetValue("100");
-}
-else if (checkEmptyS=="0")
-{
-    AttackSpeedInput->SetValue("20");
-}
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnChoice1Select(wxCommandEvent& event)
-{
-heroTemp=(heroUnit *)Choice1->GetClientData(Choice1->GetSelection());
-HeroFillForms();
-event.Skip();
-}
-
-void DamageAnalysisFrame::HeroFillForms()
-{
-int Level;
-Level=wxAtoi(LevelInput->GetValue());
-// ___ Processing stats:
-// ___ STR
-if (Level>1)
-{
-    statstr=(double)heroTemp->AttributeBaseStrength+(heroTemp->AttributeStrengthGain*(Level-1));
-}
-else
-{
-    statstr=heroTemp->AttributeBaseStrength;
-}
-StatStrInput->SetValue(wxString::Format(wxT("%i"),statstr));
-HeroFillForms("str");
-// ___ AGI
-if (Level>1)
-{
-    statagi=(double)heroTemp->AttributeBaseAgility+(heroTemp->AttributeAgilityGain*(Level-1));
-}
-else
-{
-    statagi=heroTemp->AttributeBaseAgility;
-}
-StatAgiInput->SetValue(wxString::Format(wxT("%i"),statagi));
-HeroFillForms("agi");
-// ___ INT
-if (Level>1)
-{
-    statint=(double)heroTemp->AttributeBaseIntelligence+(heroTemp->AttributeIntelligenceGain*(Level-1));
-}
-else
-{
-    statint=heroTemp->AttributeBaseIntelligence;
-}
-StatIntInput->SetValue(wxString::Format(wxT("%i"),statint));
-HeroFillForms("int");
-// ___ Processing secondary parameters
-HP=heroTemp->StatusHealth;
-if (statstr!=0)
-{
-    HP=(double)HP+(19*statstr);
-}
-StatHPInput->SetValue(wxString::Format(wxT("%i"),HP));
-// ___ Magic resist
-magicResist=1-(heroTemp->MagicalResistance/100);
-magicResistanceBuffer.push_back(magicResist);
-MagicResistanceInput->SetValue(wxString::Format(wxT("%i"),heroTemp->MagicalResistance));
-    return;
-}
-
-void DamageAnalysisFrame::HeroFillForms(wxString checkStat)
-{
-int tmpI;
-double tmpD;
-if (checkStat=="str")
-{
-if (statstr!=0)
-{
-    tmpI=heroTemp->StatusHealth+(19*statstr);
-    StatHPInput->SetValue(wxString::Format(wxT("%i"),tmpI));
-    tmpD=(double)heroTemp->StatusHealthRegen+(0.03*statstr);
-    StatHPRegenInput->SetValue(wxString::Format(wxT("%f"),tmpD));
-}
-else
-{
-    tmpI=heroTemp->StatusHealth;
-    StatHPInput->SetValue(wxString::Format(wxT("%i"),tmpI));
-    tmpD=(double)heroTemp->StatusHealthRegen;
-    StatHPRegenInput->SetValue(wxString::Format(wxT("%f"),tmpD));
-}
-}
-else if(checkStat=="agi")
-{
-if (statagi!=0)
-{
-    tmpI=(double)heroTemp->ArmorPhysical+(0.14*statagi);
-    ArmorInput->SetValue(wxString::Format(wxT("%i"),tmpI));
-}
-else
-{
-    tmpI=(double)heroTemp->ArmorPhysical;
-    ArmorInput->SetValue(wxString::Format(wxT("%i"),tmpI));
-}
-}
-else if (checkStat=="int")
-{
-if (statint!=0)
-{
-    tmpI=heroTemp->StatusMana+(13*statint);
-    StatMPInput->SetValue(wxString::Format(wxT("%i"),tmpI));
-    tmpD=(double)heroTemp->StatusManaRegen+(0.04*statint);
-    StatMPRegenInput->SetValue(wxString::Format(wxT("%f"),tmpD));
-}
-else
-{
-    tmpI=heroTemp->StatusMana;
-    StatMPInput->SetValue(wxString::Format(wxT("%i"),tmpI));
-    tmpD=(double)heroTemp->StatusManaRegen;
-    StatMPRegenInput->SetValue(wxString::Format(wxT("%f"),tmpD));
-}
-}
-return;
-}
-
-void DamageAnalysisFrame::EffectChoiceFill()
-{
-    for (std::map<std::string,basic_effect *>::iterator it=effectMapAttack.begin(); it!=effectMapAttack.end(); ++it)
+    if (wxIsEmpty(AttackSpeedInput->GetValue()))
     {
-        attackEffectsChoice2->Append(it->second->Name,&(*it->second));
+        AttackSpeedInput->SetValue(wxString::Format(wxT("%i"),gamerule_StartIAS));
     }
-    for (std::map<std::string,basic_effect *>::iterator it=effectMapDefense.begin(); it!=effectMapDefense.end(); ++it)
+    else if (AttackSpeedInput->GetValue()=="0")
     {
-        defenseEffectsChoice2->Append(it->second->Name,&(*it->second));
+        AttackSpeedInput->SetValue("20");
     }
-return;
-}
-
-void DamageAnalysisFrame::OnLevelLostFocus(wxFocusEvent& event)
-{
-if (wxIsEmpty(LevelInput->GetValue()))
-{
-    LevelInput->SetValue("1");
-}
-HeroFillForms();
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnLevelInputTextEnter(wxCommandEvent& event)
-{
-wxFocusEvent tmpEvt;
-DamageAnalysisFrame::OnLevelLostFocus(tmpEvt);
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnStatStrLostFocus(wxFocusEvent& event)
-{
-if (wxIsEmpty(StatStrInput->GetValue()))
-{
-    StatStrInput->SetValue("0");
-}
-int tmpI;
-tmpI=wxAtoi(StatStrInput->GetValue());
-statstr=tmpI;
-HeroFillForms("str");
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnStatStrInputTextEnter(wxCommandEvent& event)
-{
-wxFocusEvent tmpEvt;
-DamageAnalysisFrame::OnStatStrLostFocus(tmpEvt);
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnStatAgiLostFocus(wxFocusEvent& event)
-{
-if (wxIsEmpty(StatAgiInput->GetValue()))
-{
-    StatAgiInput->SetValue("0");
-}
-int tmpI;
-tmpI=wxAtoi(StatAgiInput->GetValue());
-statagi=tmpI;
-HeroFillForms("agi");
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnStatAgiInputTextEnter(wxCommandEvent& event)
-{
-wxFocusEvent tmpEvt;
-DamageAnalysisFrame::OnStatAgiLostFocus(tmpEvt);
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnStatIntLostFocus(wxFocusEvent& event)
-{
-if (wxIsEmpty(StatIntInput->GetValue()))
-{
-    StatIntInput->SetValue("0");
-}
-int tmpI;
-tmpI=wxAtoi(StatIntInput->GetValue());
-statint=tmpI;
-HeroFillForms("int");
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnStatIntInputTextEnter(wxCommandEvent& event)
-{
-wxFocusEvent tmpEvt;
-DamageAnalysisFrame::OnStatIntLostFocus(tmpEvt);
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnStatHPLostFocus(wxFocusEvent& event)
-{
-if (wxIsEmpty(StatHPInput->GetValue()))
-{
-    StatHPInput->SetValue("0");
-}
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnStatHPInputTextEnter(wxCommandEvent& event)
-{
-wxFocusEvent tmpEvt;
-DamageAnalysisFrame::OnStatHPLostFocus(tmpEvt);
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnStatMPLostFocus(wxFocusEvent& event)
-{
-if (wxIsEmpty(StatMPInput->GetValue()))
-{
-    StatMPInput->SetValue("0");
-}
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnStatMPInputTextEnter(wxCommandEvent& event)
-{
-wxFocusEvent tmpEvt;
-DamageAnalysisFrame::OnStatMPLostFocus(tmpEvt);
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnStatHPRegenLostFocus(wxFocusEvent& event)
-{
-if (wxIsEmpty(StatHPRegenInput->GetValue()))
-{
-    StatHPRegenInput->SetValue("0");
-}
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnStatHPRegenInputTextEnter(wxCommandEvent& event)
-{
-wxFocusEvent tmpEvt;
-DamageAnalysisFrame::OnStatHPRegenLostFocus(tmpEvt);
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnStatMPRegenLostFocus(wxFocusEvent& event)
-{
-if (wxIsEmpty(StatMPRegenInput->GetValue()))
-{
-    StatMPRegenInput->SetValue("0");
-}
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnStatMPRegenInputTextEnter(wxCommandEvent& event)
-{
-wxFocusEvent tmpEvt;
-DamageAnalysisFrame::OnStatMPRegenLostFocus(tmpEvt);
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnArmorLostFocus(wxFocusEvent& event)
-{
-if (wxIsEmpty(ArmorInput->GetValue()))
-{
-    ArmorInput->SetValue("0");
-}
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnArmorInputTextEnter(wxCommandEvent& event)
-{
-wxFocusEvent tmpEvt;
-DamageAnalysisFrame::OnArmorLostFocus(tmpEvt);
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnMagicResistanceLostFocus(wxFocusEvent& event)
-{
-if (wxIsEmpty(MagicResistanceInput->GetValue()))
-{
-    MagicResistanceInput->SetValue("0");
-}
-
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnMagicResistanceInputTextEnter(wxCommandEvent& event)
-{
-wxFocusEvent tmpEvt;
-DamageAnalysisFrame::OnMagicResistanceLostFocus(tmpEvt);
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnWithstandLostFocus(wxFocusEvent& event)
-{
-if (wxIsEmpty(WithstandInput->GetValue()))
-{
-    WithstandInput->SetValue("1");
-}
-if (WithstandInput->GetValue()=="0")
-{
-    WithstandInput->SetValue("1");
-}
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnWithstandInputTextEnter(wxCommandEvent& event)
-{
-wxFocusEvent tmpEvt;
-DamageAnalysisFrame::OnWithstandLostFocus(tmpEvt);
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnKeyDown(wxKeyEvent& event)
-{
-if (wxGetKeyState(WXK_RETURN))
-{
-    if (attackEffectsChoice2->HasFocus())
-    {
-        wxCommandEvent tmpEvt;
-        DamageAnalysisFrame::OnChoice3Select(tmpEvt);
-    }
-    if (defenseEffectsChoice2->HasFocus())
-    {
-        wxCommandEvent tmpEvt;
-        DamageAnalysisFrame::OnChoice4Select(tmpEvt);
-    }
-}
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnMousewheel(wxMouseEvent& event)
-{
-}
-
-void DamageAnalysisFrame::OnChoice3Select(wxCommandEvent& event)
-{
-if (!wxGetKeyState(WXK_UP) && !wxGetKeyState(WXK_DOWN) && !wxGetKeyState(WXK_LEFT) && !wxGetKeyState(WXK_RIGHT))
-{
-    attackEffects.push_back(((basic_effect *)attackEffectsChoice2->GetClientData(event.GetSelection()))->getnewCopy());
-    wxListItem tmpListItem;
-    tmpListItem.SetId(wxNewId());
-    std::vector<basic_effect *>::iterator tempVecIt=attackEffects.end()-1;
-    tmpListItem.SetText((*tempVecIt)->Name);
-    (*tempVecIt)->index=wxNewId();
-    tmpListItem.SetData(&(**tempVecIt));
-    //wxMessageBox(((basic_effect *)tmpListItem.GetData())->Name, _("I want you to see this ;)"));
-    attackEffectsCtrl->InsertItem(tmpListItem);
-}
-event.Skip();
-}
-
-void DamageAnalysisFrame::OnChoice4Select(wxCommandEvent& event)
-{
-    if (!wxGetKeyState(WXK_UP) && !wxGetKeyState(WXK_DOWN) && !wxGetKeyState(WXK_LEFT) && !wxGetKeyState(WXK_RIGHT))
-    {
-        defenceEffects.push_back(((basic_effect *)defenseEffectsChoice2->GetClientData(event.GetSelection()))->getnewCopy());
-        wxListItem tmpListItem;
-        tmpListItem.SetId(wxNewId());
-        std::vector<basic_effect *>::iterator tempVecIt=defenceEffects.end()-1;
-        tmpListItem.SetText((*tempVecIt)->Name);
-        (*tempVecIt)->index=wxNewId();
-        tmpListItem.SetData(&(**tempVecIt));
-        defenseEffectsCtrl->InsertItem(tmpListItem);
-    }
-event.Skip();
+    event.Skip();
 }
 
 void DamageAnalysisFrame::OnattackEffectsCtrlItemActivated(wxListEvent& event)
 {
-int foundIndex=0;
-if ((foundIndex=attackEffectsCtrl->GetNextItem(0, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED)) != wxNOT_FOUND)
-{
-    if (attackEffectsCtrl->GetItemData(foundIndex)!=NULL)
+    int foundIndex=0;
+    if ((foundIndex=attackEffectsCtrl->GetNextItem(0, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED)) != wxNOT_FOUND)
     {
-    ((basic_effect *)event.GetItem().GetData())->FillPropertiesGrid(Frame2);
-    Frame2->itemID=event.GetId();
-    Frame2->Show();
-    Frame2->Restore();
-    Frame2->Raise();
+        if (attackEffectsCtrl->GetItemData(foundIndex)!=NULL)
+        {
+            Frame2->currEditObject=(void *)event.GetItem().GetData();
+            ((basic_effect *)(Frame2->currEditObject))->FillPropertiesGrid(Frame2);
+            Frame2->Show();
+            Frame2->Restore();
+            Frame2->Raise();
+        }
     }
-}
-event.Skip();
+    event.Skip();
 }
 
-void DamageAnalysisFrame::OndefenseEffectsCtrlItemActivated2(wxListEvent& event)
+void DamageAnalysisFrame::OnaECBButtonAddClick(wxCommandEvent& event)
 {
-int foundIndex;
-if ((foundIndex=defenseEffectsCtrl->GetNextItem(0, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED)) != wxNOT_FOUND)
+    attackEffects.push_back(((basic_effect *)attackEffectsChoice2->GetClientData(attackEffectsChoice2->GetSelection()))->getnewCopy());
+    wxListItem tmpListItem;
+    tmpListItem.SetId(wxNewId());
+    std::vector<basic_effect *>::iterator tempVecIt=attackEffects.end()-1;
+    tmpListItem.SetText((*tempVecIt)->Name);
+    tmpListItem.SetData(&(**tempVecIt));
+    attackEffectsCtrl->InsertItem(tmpListItem);
+    attackEffectsCtrl->EnsureVisible(attackEffectsCtrl->GetItemCount()-1);
+    attackEffectsCtrl->SetItemState(attackEffectsCtrl->GetItemCount()-1, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+}
+
+void DamageAnalysisFrame::OnaECBButtonRemoveClick(wxCommandEvent& event)
 {
-    if (defenseEffectsCtrl->GetItemData(foundIndex)!=NULL)
+    std::vector<basic_effect *>::iterator tempVecIt=attackEffects.end()-1;
+    int i=attackEffectsCtrl->GetNextItem(-1,wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+    if (i!=-1 && i!=0)
     {
-        ((basic_effect *)event.GetItem().GetData())->FillPropertiesGrid(Frame2);
-        Frame2->itemID=event.GetId();
-        Frame2->Show();
-        Frame2->Restore();
-        Frame2->Raise();
+        int answer = wxMessageBox("Are you sure you want to delete this effect?", "Deleting effect", wxOK | wxCANCEL | wxCANCEL_DEFAULT | wxICON_WARNING, this);
+        if (answer == wxOK)
+        {
+            int vectSize=attackEffects.size()-1;
+            for (int j=attackEffects.size()-1;vectSize==attackEffects.size()-1;j--,tempVecIt--)
+            {
+                if (isSameRefAddress((*(basic_effect *)attackEffectsCtrl->GetItemData(i)),**tempVecIt)==true)
+                {
+                    delete (basic_effect *)attackEffectsCtrl->GetItemData(i);
+                    attackEffects.erase(tempVecIt);
+                    attackEffectsCtrl->DeleteItem(i);
+                    Frame2->Hide();
+                }
+            }
+        }
     }
 }
-event.Skip();
+
+void DamageAnalysisFrame::OnMenuSettingsSelected(wxCommandEvent& event)
+{
+    Frame3->Show();
+    Frame3->Restore();
+    Frame3->Raise();
 }

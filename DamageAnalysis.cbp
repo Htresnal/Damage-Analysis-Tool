@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="DamageAnalysis" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Release">
+				<Option output="bin/Release/DamageAnalysis" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-std=c++11" />
+					<Add option="-g" />
+					<Add directory="D:/wxWidgets-3.1.0/lib/gcc_dll/mswu" />
+					<Add directory="D:/wxWidgets-3.1.0/include" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="D:/wxWidgets-3.1.0/lib/gcc_dll/mswu" />
+					<Add directory="D:/wxWidgets-3.1.0/include" />
+				</ResourceCompiler>
+				<Linker>
+					<Add directory="D:/wxWidgets-3.1.0/lib/gcc_dll" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-std=c++11" />
+			<Add option="-g" />
+		</Compiler>
+		<Linker>
+			<Add library="D:/wxWidgets-3.1.0/lib/gcc_dll/libwxmsw31u.a" />
+		</Linker>
+		<Unit filename="AnalysisLogs.cpp" />
+		<Unit filename="AnalysisLogs.h" />
+		<Unit filename="DamageAnalysisApp.cpp" />
+		<Unit filename="DamageAnalysisApp.h" />
+		<Unit filename="DamageAnalysisMain.cpp" />
+		<Unit filename="DamageAnalysisMain.h" />
+		<Unit filename="GameSettings.cpp" />
+		<Unit filename="GameSettings.h" />
+		<Unit filename="Vectors.cpp" />
+		<Unit filename="Vectors.h" />
+		<Unit filename="commonIncludes.h" />
+		<Unit filename="effects.cpp" />
+		<Unit filename="effects.h" />
+		<Unit filename="effectsProperties.cpp" />
+		<Unit filename="effectsProperties.h" />
+		<Unit filename="heroData.cpp" />
+		<Unit filename="heroData.h" />
+		<Unit filename="heroDataLoad.cpp" />
+		<Unit filename="heroDataLoad.h" />
+		<Unit filename="resource.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="wxsmith/AnalysisLogs.wxs" />
+		<Unit filename="wxsmith/DamageAnalysisframe.wxs" />
+		<Unit filename="wxsmith/GameSettings1.wxs" />
+		<Unit filename="wxsmith/effectsProperties.wxs" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+			<wxsmith version="1">
+				<gui name="wxWidgets" src="DamageAnalysisApp.cpp" main="-- None --" init_handlers="necessary" language="CPP" />
+				<resources>
+					<wxFrame wxs="wxsmith/DamageAnalysisframe.wxs" src="DamageAnalysisMain.cpp" hdr="DamageAnalysisMain.h" fwddecl="0" i18n="1" name="DamageAnalysisFrame" language="CPP" />
+					<wxFrame wxs="wxsmith/AnalysisLogs.wxs" src="AnalysisLogs.cpp" hdr="AnalysisLogs.h" fwddecl="0" i18n="1" name="AnalysisLogs" language="CPP" />
+					<wxFrame wxs="wxsmith/effectsProperties.wxs" src="effectsProperties.cpp" hdr="effectsProperties.h" fwddecl="0" i18n="1" name="effectsProperties" language="CPP" />
+					<wxFrame wxs="wxsmith/GameSettings1.wxs" src="GameSettings.cpp" hdr="GameSettings.h" fwddecl="0" i18n="1" name="GameSettings" language="CPP" />
+				</resources>
+			</wxsmith>
+			<AutoVersioning>
+				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
+				<Settings autoincrement="0" date_declarations="0" use_define="0" update_manifest="0" do_auto_increment="0" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
+				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
+			</AutoVersioning>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

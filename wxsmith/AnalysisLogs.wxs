@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wxsmith>
+	<object class="wxFrame" name="AnalysisLogs">
+		<title>Analysis log</title>
+		<size>350,350</size>
+		<minsize>180,180</minsize>
+		<pos_arg>1</pos_arg>
+		<size_arg>1</size_arg>
+		<style>wxDEFAULT_FRAME_STYLE|wxFRAME_TOOL_WINDOW|wxNO_BORDER</style>
+		<handler function="OnClose" entry="EVT_CLOSE" />
+		<object class="wxPanel" name="ID_PANEL1" variable="Panel1" member="yes">
+			<pos>256,328</pos>
+			<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
+				<rows>2</rows>
+				<growablecols>0</growablecols>
+				<growablerows>0</growablerows>
+				<object class="sizeritem">
+					<object class="wxRichTextCtrl" name="ID_RICHTEXTCTRL1" variable="RichTextCtrl1" member="yes">
+						<value>Initializing data...</value>
+						<minsize>100,100</minsize>
+						<maxsize>0,0</maxsize>
+						<style>wxRE_MULTILINE|wxNO_BORDER|wxVSCROLL</style>
+					</object>
+					<flag>wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+					<border>1</border>
+					<option>2</option>
+				</object>
+				<object class="sizeritem">
+					<object class="wxButton" name="ID_BUTTON1" variable="Button1" member="yes">
+						<label>Close</label>
+						<handler function="OnButton1Click" entry="EVT_BUTTON" />
+					</object>
+					<flag>wxALIGN_RIGHT|wxALIGN_BOTTOM</flag>
+					<option>1</option>
+				</object>
+			</object>
+		</object>
+	</object>
+</wxsmith>

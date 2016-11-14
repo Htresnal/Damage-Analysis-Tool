@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<FileVersion major="1" minor="0" />
+	<ActiveTarget name="Release" />
+	<File name="effects.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="12830" topLine="512" />
+		</Cursor>
+	</File>
+	<File name="wxsmith\DamageAnalysisframe.wxs" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="547" topLine="198" />
+		</Cursor>
+	</File>
+	<File name="wxsmith\effectsProperties.wxs" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1910" topLine="41" />
+		</Cursor>
+	</File>
+	<File name="resource.rc" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3050" topLine="60" />
+		</Cursor>
+	</File>
+	<File name="effectsProperties.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3245" topLine="64" />
+		</Cursor>
+	</File>
+	<File name="DamageAnalysisApp.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="456" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="effects.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="-6" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2620" topLine="54" />
+		</Cursor>
+	</File>
+	<File name="commonIncludes.h" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="71" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="DamageAnalysisMain.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="32091" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="AnalysisLogs.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1225" topLine="29" />
+		</Cursor>
+	</File>
+	<File name="DamageAnalysisApp.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="470" topLine="2" />
+		</Cursor>
+	</File>
+	<File name="heroData.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="-6" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="586" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="wxsmith\AnalysisLogs.wxs" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1270" topLine="5" />
+		</Cursor>
+	</File>
+	<File name="heroDataLoad.cpp" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="-7" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="485" topLine="3" />
+		</Cursor>
+	</File>
+	<File name="heroDataLoad.h" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="49" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="GameSettings.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="539" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="DamageAnalysisMain.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="348" topLine="21" />
+		</Cursor>
+	</File>
+	<File name="Vectors.cpp" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3959" topLine="75" />
+		</Cursor>
+	</File>
+	<File name="heroData.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="-7" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1167" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="GameSettings.cpp" open="1" top="1" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1507" topLine="37" />
+		</Cursor>
+	</File>
+	<File name="effectsProperties.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="702" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="Vectors.h" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="-6" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="658" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="wxsmith\GameSettings1.wxs" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="659" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="AnalysisLogs.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="21229" topLine="557" />
+		</Cursor>
+	</File>
+</CodeBlocks_layout_file>

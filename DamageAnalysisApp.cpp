@@ -7,12 +7,12 @@
  * License:
  **************************************************************/
 #include "DamageAnalysisApp.h"
+#include "GameSettings.h"
 #include "DamageAnalysisMain.h"
 #include "AnalysisLogs.h"
 #include "effectsProperties.h"
+
 DamageAnalysisFrame *Frame;
-AnalysisLogs *Frame1;
-effectsProperties *Frame2;
 
 //(*AppHeaders
 #include <wx/image.h>
@@ -25,11 +25,12 @@ bool DamageAnalysisApp::OnInit()
     //(*AppInitialize
     bool wxsOK = true;
     wxInitAllImageHandlers();
+    if ( wxsOK )
+    {
+        Frame=new DamageAnalysisFrame(NULL,wxNewId());
+    	Frame->Show();
+    	SetTopWindow(Frame);
+    }
     //*)
-    Frame = new DamageAnalysisFrame(NULL,wxNewId());
-    Frame1 = new AnalysisLogs(Frame,wxNewId());
-    Frame2 = new effectsProperties(Frame,wxNewId());
-    Frame->Show();
-    SetTopWindow(Frame);
     return wxsOK;
 }

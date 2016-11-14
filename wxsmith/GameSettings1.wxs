@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wxsmith>
+	<object class="wxFrame" name="GameSettings">
+		<title>Game engine settings</title>
+		<size>390,248</size>
+		<minsize>-1,-1</minsize>
+		<maxsize>-1,-1</maxsize>
+		<pos_arg>1</pos_arg>
+		<size_arg>1</size_arg>
+		<handler function="OnClose" entry="EVT_CLOSE" />
+		<object class="wxGrid" name="ID_GRID1" variable="Grid1" member="yes">
+			<cols>1</cols>
+			<labelcolwidth>130</labelcolwidth>
+			<defaultcolsize>289</defaultcolsize>
+			<collabels>
+				<item>Value</item>
+			</collabels>
+			<pos>144,272</pos>
+			<size>232,450</size>
+			<handler function="OnSettingsGrid1CellChange" entry="EVT_CMD_GRID_CELL_CHANGED" />
+		</object>
+	</object>
+</wxsmith>

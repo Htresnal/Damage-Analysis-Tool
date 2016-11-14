@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wxsmith>
+	<object class="wxPanel" name="AnalyzeWindow">
+		<size>500,500</size>
+		<pos_arg>1</pos_arg>
+		<size_arg>1</size_arg>
+		<style>wxSTATIC_BORDER|wxTAB_TRAVERSAL</style>
+		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
+			<rows>2</rows>
+			<object class="sizeritem">
+				<object class="wxFlexGridSizer" variable="FlexGridSizer2" member="no">
+					<object class="sizeritem">
+						<object class="wxRichTextCtrl" name="ID_RICHTEXTCTRL1" variable="RichTextCtrl1" member="yes">
+							<value>Data analyze results:</value>
+							<size>371,298</size>
+							<style>wxRE_MULTILINE|wxRE_READONLY</style>
+						</object>
+						<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+				</object>
+				<flag>wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
+				<border>5</border>
+				<option>1</option>
+			</object>
+			<object class="sizeritem">
+				<object class="wxFlexGridSizer" variable="FlexGridSizer3" member="no">
+					<object class="sizeritem">
+						<object class="wxButton" name="ID_BUTTON1" variable="Button1" member="yes">
+							<label>Close</label>
+							<size>105,27</size>
+						</object>
+						<flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+				</object>
+				<flag>wxALIGN_RIGHT|wxALIGN_BOTTOM</flag>
+				<border>5</border>
+				<option>1</option>
+			</object>
+		</object>
+	</object>
+</wxsmith>

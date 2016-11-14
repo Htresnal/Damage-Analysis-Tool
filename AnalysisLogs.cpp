@@ -5,25 +5,31 @@
 //*)
 
 #include "AnalysisLogs.h"
+extern double Withstanded;
+double actualTimeline=0;
 
-const double speedBATPart=5.72;
-const double speedBATStart=-100;
-extern double Withstanded, IAS, BATD;
-extern double attackTimeParts;
-extern double attackHits;
+extern DamageAnalysisFrame *Frame;
 
-double  ARReduct, InDamageBase, InDamage, InDamageRaw, InDamageMagic, InDamageNoReduct, aps, attackPerSecondPart, magicResist, InDamagePerCycle, InDamageMagicPerCycle, InDamageNoReductPerCycle;
-double addWhiteDmg;
-int statstr, statint, statagi, HP, MP, DoDoubleHit, armor;
+extern heroUnit *heroTemp;
+extern heroUnit *heroAttTemp;
+
+extern hero_Defender Defender;
+extern hero_Attacker Attacker;
+
+double InDamageNoReductPerCycleTMP, InDamagePerCycleTMP, InDamagePerCycleCrit, InDamageMagicPerCycleTMP, InDamagePrev, InDamageBase, InDamage, InDamageRaw, InDamageMagic, InDamageNoReduct, aps, singleAttackTime, currAps, currSingleAttackTime, InDamagePerCycle, InDamageMagicPerCycle, InDamageNoReductPerCycle;
+double timeElapsed, timeLethalStrike;
+unsigned totalHitsActual, lethalHit, WhiteDmg;
+int DefendercurrMaxHP;
+
+int DoDoubleHit, GreenDmg;
+
+std::pair<int,int> *critTMPPair;
 
 extern std::vector<double> magicResistanceBuffer;
-
 extern std::vector<basic_effect *> attackEffects;
 extern std::vector<basic_effect *> defenceEffects;
-extern std::vector<effect_critical_damage> critEffects;
-extern std::vector<effect_block_damage> shieldBlockEffects;
-
-extern DamageAnalysisFrame *DamageInputWindow;
+extern std::vector<effect_critical_damage *> critEffects;
+extern std::vector<effect_block_damage *> shieldBlockEffects;
 
 //(*IdInit(AnalysisLogs)
 const long AnalysisLogs::ID_RICHTEXTCTRL1 = wxNewId();
@@ -41,7 +47,7 @@ AnalysisLogs::AnalysisLogs(wxWindow* parent,wxWindowID id,const wxPoint& pos,con
 	//(*Initialize(AnalysisLogs)
 	wxFlexGridSizer* FlexGridSizer1;
 
-	Create(parent, id, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
+	Create(parent, id, _("Analysis log"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE|wxFRAME_TOOL_WINDOW|wxNO_BORDER, _T("id"));
 	SetClientSize(wxSize(350,350));
 	Move(wxDefaultPosition);
 	SetMinSize(wxSize(180,180));
@@ -54,7 +60,7 @@ AnalysisLogs::AnalysisLogs(wxWindow* parent,wxWindowID id,const wxPoint& pos,con
 	rchtxtAttr_1.SetBulletStyle(wxTEXT_ATTR_BULLET_STYLE_ALIGN_LEFT);
 	RichTextCtrl1->SetMinSize(wxSize(100,100));
 	RichTextCtrl1->SetMaxSize(wxSize(0,0));
-	FlexGridSizer1->Add(RichTextCtrl1, 2, wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
+	FlexGridSizer1->Add(RichTextCtrl1, 2, wxEXPAND, 1);
 	Button1 = new wxButton(Panel1, ID_BUTTON1, _("Close"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
 	FlexGridSizer1->Add(Button1, 1, wxALIGN_RIGHT|wxALIGN_BOTTOM, 0);
 	Panel1->SetSizer(FlexGridSizer1);
@@ -64,7 +70,6 @@ AnalysisLogs::AnalysisLogs(wxWindow* parent,wxWindowID id,const wxPoint& pos,con
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&AnalysisLogs::OnButton1Click);
 	Connect(wxID_ANY,wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&AnalysisLogs::OnClose);
 	//*)
-	DamageInputWindow=(DamageAnalysisFrame *)GetParent();
 }
 
 AnalysisLogs::~AnalysisLogs()
@@ -76,7 +81,7 @@ AnalysisLogs::~AnalysisLogs()
 void AnalysisLogs::RunAnalysis()
 {
 RichTextCtrl1->Clear();
-DamageLogFill((void *)RichTextCtrl1);
+DamageLogFill((void *)RichTextCtrl1); // Отдаём функции RichTextCtrl.
 Show();
 Restore();
 Raise();
@@ -85,222 +90,375 @@ Raise();
 void AnalysisLogs::DamageLogFill(void *myLogTable)
 {
 wxRichTextCtrl *richTextPtr=static_cast<wxRichTextCtrl *>(myLogTable);
-unsigned WhiteDmg, hitsI;
-int GreenDmg, totalhits;
+unsigned hitsI;
+int totalhits;
+timeElapsed=0;
+timeLethalStrike=0;
 double hitsD;
+double tmpHPRegen, tmpMPRegen, MPBuffer, HPBuffer;
+MPBuffer=0;
+HPBuffer=0;
+/**
+Before we are able to start the analyze process, we are supposed to create both hero objects, fill their
+stats if present, and run armor\IAS\Level precalculations. All effects are based strictly on stats being
+self-aware and in full self control. Thats why heroData.cpp contains all the methods you may need to
+control the stat setting processes. Use methods instead of changing stat variables by hand, that is
+vital.
+*/
+Defender.fillFromUI();// Take data from UI
+Attacker.fillFromUI();// Take data from UI
+hero_Attacker tmpAttacker;
+tmpAttacker=Attacker;
+hero_Defender tmpDefender;
+tmpDefender=Defender;
+critEffects.clear();
+critEffects.reserve(20);
+shieldBlockEffects.clear();
+shieldBlockEffects.reserve(20);
+magicResistanceBuffer.clear();
+magicResistanceBuffer.reserve(5);
+// ___ Initializing HP and MP data
+magicResistanceBuffer.push_back(Defender.magicResist);// Loading in the default magic resist
 richTextPtr->AppendText("Attacker's base damage: ");
-WhiteDmg=wxAtoi(DamageInputWindow->WhiteDamageInput->GetValue());
-richTextPtr->AppendText(DamageInputWindow->WhiteDamageInput->GetValue());
+WhiteDmg=wxAtoi(Frame->WhiteDamageInput->GetValue());
+richTextPtr->AppendText(Frame->WhiteDamageInput->GetValue());
 richTextPtr->AppendText("\nAttacker's bonus damage: ");
-GreenDmg=wxAtoi(DamageInputWindow->GreenDamageInput->GetValue());
-richTextPtr->AppendText(DamageInputWindow->GreenDamageInput->GetValue());
+GreenDmg=wxAtoi(Frame->GreenDamageInput->GetValue());
+richTextPtr->AppendText(Frame->GreenDamageInput->GetValue());
+recalculateAttackSpeed();// Is vital.
 InDamage=(double)WhiteDmg+GreenDmg;
 InDamageMagicPerCycle=0;
 InDamageNoReductPerCycle=0;
 InDamagePerCycle=0;
-for (unsigned i=0;i<attackEffects.size();i++)
+InDamagePerCycleCrit=0;
+//Find and destroy all the temporary effects, produced by master effects.
+for (int i=attackEffects.size()-1;i!=-1;i--)
 {
-    if (attackEffects[i]->disabled!=true)
+    if (attackEffects.at(i)->temporary==true)
     {
-    attackEffects[i]->Init();
+        delete attackEffects.at(i);
+        attackEffects.erase(attackEffects.begin()+i);
     }
 }
-for (unsigned i=0;i<defenceEffects.size();i++)
+for (int i=defenceEffects.size()-1;i!=-1;i--)
 {
-    if (defenceEffects[i]->disabled!=true)
+    if (defenceEffects.at(i)->temporary==true)
     {
-    defenceEffects[i]->Init();
+        delete defenceEffects.at(i);
+        defenceEffects.erase(defenceEffects.begin()+i);
     }
 }
-richTextPtr->AppendText("\nAttacker's base attack time: ");
-richTextPtr->AppendText(DamageInputWindow->BATInput->GetValue());
-richTextPtr->AppendText("\nAttacker's IAS: ");
-richTextPtr->AppendText(DamageInputWindow->AttackSpeedInput->GetValue());
+for (int R=minRanks;R<=maxRanks;R++)
+{
+    for (unsigned f=0;f<attackEffects.size();f++)
+    {
+        if (!attackEffects[f]->disabled && attackEffects[f]->initRank==R)
+        {
+            attackEffects[f]->Init();
+        }
+    }
+}
+for (int R=minRanks;R<=maxRanks;R++)
+{
+    for (unsigned f=0;f<defenceEffects.size();f++)
+    {
+        if (!defenceEffects[f]->disabled && defenceEffects[f]->initRank==R)
+        {
+            defenceEffects[f]->Init();
+        }
+    }
+}
 // ___ Attack speed+BAT evaluation
-richTextPtr->AppendText(" (");
-IAS=wxAtoi(DamageInputWindow->AttackSpeedInput->GetValue());
-BATD=wxAtof(DamageInputWindow->BATInput->GetValue());
-aps=(double)(IAS+(speedBATStart+(BATD*10)*speedBATPart))/(BATD*100);
-attackPerSecondPart=1/aps;
-richTextPtr->AppendText(wxString::FromDouble(attackPerSecondPart,2));
-richTextPtr->AppendText(" per second)");
-totalhits=(double)aps*(wxAtoi(DamageInputWindow->WithstandInput->GetValue()));
-richTextPtr->AppendText("\nTotal hits: ");
-richTextPtr->AppendText(wxString::Format(wxT("%i"),totalhits));
-armor=wxAtoi(DamageInputWindow->ArmorInput->GetValue());
+richTextPtr->AppendText("\nAttacker's base attack time: "+wxString::FromDouble(Attacker.BATD,2));
+richTextPtr->AppendText("\nAttacker's IAS: "+wxString::FromDouble(Attacker.IAS,0)+
+    " ("+wxString::FromDouble(singleAttackTime,2)+" per second)");
+totalhits=(double)aps*(wxAtoi(Frame->WithstandInput->GetValue()));
+richTextPtr->AppendText("\nTotal hits: "+wxString::Format(wxT("%i"),totalhits));
 richTextPtr->BeginTextColour(wxColour(255, 0, 0));
 richTextPtr->WriteText("\nAll data is approximate.");
 richTextPtr->EndTextColour();
 richTextPtr->WriteText(" ");
-if (armor>0)
-{
-    ARReduct=((0.06*armor)/(1+0.06*armor))*100;
-}
-else if (armor<0)
-{
-    ARReduct=((0.06*armor)/(1+0.06*abs(armor)))*100;
-}
-richTextPtr->AppendText("\nDamage per hit: ");
-richTextPtr->AppendText(wxString::FromDouble(InDamage,0));
+richTextPtr->AppendText("\nDamage per hit: "+wxString::FromDouble(InDamage,0));
 hitsD=InDamage*aps;
-hitsI=wxAtoi(DamageInputWindow->WithstandInput->GetValue());
-richTextPtr->AppendText("\nDamage per second: ");
-richTextPtr->AppendText(wxString::FromDouble(hitsD,0));
-richTextPtr->WriteText("\n");
+hitsI=wxAtoi(Frame->WithstandInput->GetValue());
+richTextPtr->AppendText("\nDamage per second: "+wxString::FromDouble(hitsD,0)+"\n");
 // ___ Double attack check
 // ___ Attack emulation cycle
-Withstanded=wxAtof(DamageInputWindow->WithstandInput->GetValue());
-attackTimeParts=0;
-attackHits=0;
-InDamage=InDamage+(double)WhiteDmg+GreenDmg;
+Withstanded=wxAtof(Frame->WithstandInput->GetValue());
+InDamage=0;
 InDamageMagic=0;
 InDamageNoReduct=0;
 InDamageRaw=0;
-unsigned totalHitsActual ,lethalHit;
+InDamagePrev=0;
 totalHitsActual=0;
-attackTimeParts=attackPerSecondPart;
-// ___ Initializing HP data
-HP=wxAtoi(DamageInputWindow->StatHPInput->GetValue());
-int HPMax=HP;
-while (attackTimeParts<Withstanded)
+actualTimeline=singleAttackTime;
+lethalHit=0;
+while (actualTimeline<=Withstanded)
 {
-    aps=(IAS+(speedBATStart+(BATD*10)*speedBATPart))/(BATD*100);
-    attackPerSecondPart=1/aps;
-    InDamageBase=(double)WhiteDmg+GreenDmg;
-    //InDamagePerCycle=InDamagePerCycle+InDamageBase;
+    recalculateAttackSpeed();
+    currAps=aps;
+    DefendercurrMaxHP=Defender.maxHP;
+    currSingleAttackTime=singleAttackTime;
+    InDamageBase=WhiteDmg+GreenDmg;
     InDamagePerCycle=InDamageBase;
+    InDamageRaw=InDamageRaw+InDamagePerCycle;
     InDamageMagicPerCycle=0;
     InDamageNoReductPerCycle=0; // ___ Necrophos aura can go there as an effect.
-    for (int R=minRanks;R<maxRanks;R++)
+    DoDoubleHit=0;
+    int critOnlyOnce=0;
+    for (int R=minRanks;R<=maxRanks;R++)
     {
         for (unsigned f=0;f<attackEffects.size();f++)
         {
-            if (R==0 && !critEffects.empty())
+            if (R==-2 && !critEffects.empty() && critOnlyOnce!=1)
             {
-                std::sort(critEffects.begin(),critEffects.end(),isLessThanChance);
-                for (unsigned l=0;l<critEffects.size();l++)
-                {
-                    continue;
-                }
+                critOnlyOnce=1;
+                std::sort(critEffects.begin(),critEffects.end(),isLessThanDamage);
+                TMPDamageSave();
+                calcCrits(critEffects);
+                TMPDamageLoad();
             }
-            if (!attackEffects[f]->disabled && attackEffects[f]->initRank==R)
+            if (!attackEffects[f]->disabled && !attackEffects[f]->externalContinueCycle && attackEffects[f]->initRank==R)
             {
+                TMPDamageSave();
                 attackEffects[f]->Continue();
+                TMPDamageLoad();
             }
         }
     }
-    for (int R=minRanks;R<maxRanks;R++)
+    int blockOnlyOnce=0;
+    for (int R=minRanks;R<=maxRanks;R++)
     {
+        if (R==0 && !shieldBlockEffects.empty() && blockOnlyOnce!=1)
+        {
+            blockOnlyOnce=1;
+            std::sort(shieldBlockEffects.begin(),shieldBlockEffects.end(),isLessThanBlock);
+            calcShieldBlock(shieldBlockEffects);
+        }
         for (unsigned f=0;f<defenceEffects.size();f++)
         {
-            if (!defenceEffects[f]->disabled && defenceEffects[f]->initRank==R)
+            if (!defenceEffects[f]->disabled && !defenceEffects[f]->externalContinueCycle && defenceEffects[f]->initRank==R)
             {
+                TMPDamageSave();
                 defenceEffects[f]->Continue();
+                TMPDamageLoad();
             }
         }
     }
-    if (DoDoubleHit>0)
+    for (;DoDoubleHit--;)
     {
-        for (int R=minRanks;R<maxRanks;R++)
+        /** During double hit emulation, all the data should be "refreshed" and relaunched,
+        except the time-based ones.
+        */
+        ApplyResists();
+        FlushDamage();
+        recalculateAttackSpeed();
+        InDamageBase=WhiteDmg+GreenDmg;
+        InDamagePerCycle=InDamageBase;
+        InDamageRaw=InDamageRaw+InDamagePerCycle;
+        InDamageMagicPerCycle=0;
+        InDamageNoReductPerCycle=0; // ___ Necrophos aura can go there as an effect.
+        critOnlyOnce=0;
+        for (int R=minRanks;R<=maxRanks;R++)
         {
             for (unsigned j=0;j<attackEffects.size();j++)
             {
-                if (!attackEffects[j]->disabled && attackEffects[j]->initRank==R)
+                if (R==-2 && !critEffects.empty() && critOnlyOnce!=1)
                 {
+                    critOnlyOnce=1;
+                    std::sort(critEffects.begin(),critEffects.end(),isLessThanDamage);
+                    TMPDamageSave();
+                    calcCrits(critEffects);
+                    TMPDamageLoad();
+                }
+                if (!attackEffects[j]->disabled && !attackEffects[j]->externalContinueCycle && attackEffects[j]->initRank==R)
+                {
+                    TMPDamageSave();
                     attackEffects[j]->DoDoubleAttack();
+                    TMPDamageLoad();
                 }
             }
         }
-        for (int R=minRanks;R<maxRanks;R++)
+        blockOnlyOnce=0;
+        for (int R=minRanks;R<=maxRanks;R++)
         {
+            if (R==0 && !shieldBlockEffects.empty() && blockOnlyOnce!=1)
+            {
+                blockOnlyOnce=1;
+                std::sort(shieldBlockEffects.begin(),shieldBlockEffects.end(),isLessThanBlock);
+                calcShieldBlock(shieldBlockEffects);
+            }
             for (unsigned j=0;j<defenceEffects.size();j++)
             {
-                if (!defenceEffects[j]->disabled && defenceEffects[j]->initRank==R)
+                if (!defenceEffects[j]->disabled && !attackEffects[j]->externalContinueCycle && defenceEffects[j]->initRank==R)
                 {
+                    TMPDamageSave();
                     defenceEffects[j]->DoDoubleAttack();
+                    TMPDamageLoad();
                 }
             }
         }
     totalHitsActual++;
     }
-    attackTimeParts=attackTimeParts+attackPerSecondPart;
-    attackHits=attackHits+1;
-    InDamageNoReduct=InDamageNoReduct+InDamageNoReductPerCycle;
-    InDamageRaw=InDamageRaw+InDamagePerCycle+InDamageNoReductPerCycle;
-    // ___ Physical damage filter.
-    if (armor>0)
-    {
-        ARReduct=((0.06*armor)/(1+0.06*armor))*100;
-        InDamagePerCycle=(InDamagePerCycle/100)*(100-ARReduct);
-    }
-    else if (armor<0)
-    {
-        ARReduct=((0.06*armor)/(1+0.06*abs(armor)))*100;
-        InDamagePerCycle=(InDamagePerCycle/100)*(100+abs(ARReduct));
-    }
-    InDamage=InDamage+InDamagePerCycle;
-    // ___ Magical damage filter.
-    double magicEffectsBuffered;
-    magicEffectsBuffered=0;
-    for (unsigned i=0;i<magicResistanceBuffer.size();i++)
-    {
-        magicEffectsBuffered=magicEffectsBuffered ? magicEffectsBuffered*magicResistanceBuffer[i] : magicResistanceBuffer[i];
-    }
-    magicEffectsBuffered=(1-magicEffectsBuffered);
-    InDamageRaw=InDamageRaw+InDamageMagicPerCycle;
-    InDamageMagicPerCycle=(InDamageMagicPerCycle/100)*magicEffectsBuffered;
-    InDamageMagic=InDamageMagic+InDamageMagicPerCycle;
-    //If reduction =1-(x/100) per 68%;
-    //If amplifying =1+(x/100) per 68%;
+    actualTimeline=actualTimeline+singleAttackTime;
+    ApplyResists();
+    FlushDamage();
     totalHitsActual++;
-    if (lethalHit==0)
+    // Health regeneration between hits
+    if (Defender.HPRegen)
     {
-        if ((InDamage+InDamageMagic+InDamageNoReduct)>=HP)
+        HPBuffer=HPBuffer+currAps*Defender.HPRegen;
+        if ((Defender.HP+currAps*Defender.HPRegen)>=Defender.maxHP)
         {
-            lethalHit=totalHitsActual;
+            Defender.HP=Defender.maxHP;
+        }
+        else
+        {
+            Defender.HP=Defender.HP+currAps*Defender.HPRegen;
         }
     }
+    // Mana regeneration between hits
+    if (Defender.MPRegen || Defender.MPRegenBonus)
+    {
+        tmpMPRegen=(((Defender.MPRegen!=0) ? Defender.MPRegen*(1+Defender.MPRegenMultiplier) : 0)+Defender.MPRegenBonus)*currAps;
+        MPBuffer=MPBuffer+tmpMPRegen;
+        tmpMPRegen=trunc(MPBuffer);
+        MPBuffer=MPBuffer-tmpMPRegen;
+        Defender.MP=Defender.MP+tmpMPRegen;
+        if (Defender.MP>Defender.maxMP)
+        {
+            Defender.MP=Defender.maxMP;
+        }
+    }
+    timeElapsed=timeElapsed+currSingleAttackTime;
 }
-if (armor!=0)
+if (Defender.armor!=0)
 {
 // Armor reduction evaluation
-    richTextPtr->AppendText("Damage reduction: ");
-    richTextPtr->AppendText(wxString::FromDouble(ARReduct,0));
-    richTextPtr->AppendText("%");
+    richTextPtr->AppendText("Physical damage reduction: "+wxString::FromDouble(getArmorReduction(),0)+"%");
 }
 else
 {
-    richTextPtr->AppendText("No damage reduction.");
+    richTextPtr->AppendText("No physical damage reduction.");
 }
-if (lethalHit)
+if (Defender.HP<=0)
 {
-richTextPtr->AppendText("\nLethal hit: ");
-richTextPtr->AppendText(wxString::Format(wxT("%i"),lethalHit));
+richTextPtr->BeginTextColour(wxColour(255, 0, 0));
+richTextPtr->WriteText("\nLethal hit:");
+richTextPtr->EndTextColour();
+richTextPtr->WriteText(" ");
+    if (lethalHit)
+    {
+    richTextPtr->AppendText(wxString::Format(wxT("%i"),lethalHit));
+    }
+    else
+    {
+    richTextPtr->AppendText(wxString::Format(wxT("%i"),totalHitsActual));
+    }
 }
-richTextPtr->AppendText("\nHits done: ");
-richTextPtr->AppendText(wxString::Format(wxT("%i"),totalHitsActual));
-//hitsD=(double)InDamageRaw;
-richTextPtr->AppendText("\nRaw damage withstanded: ");
-richTextPtr->AppendText(wxString::FromDouble(((int)InDamageRaw),0));
-richTextPtr->AppendText("\nActual damage withstanded: ");
-richTextPtr->AppendText(wxString::FromDouble(((int)InDamage+InDamageMagic+InDamageNoReduct),0));// ___ ACTUAL DAMAGE WITHSTANDED IS NOT WORKED THROUGH
-richTextPtr->AppendText("\nDEBUG INFO: ");
-richTextPtr->AppendText("\n");
-richTextPtr->AppendText(wxString::FromDouble(InDamage,0));
-richTextPtr->AppendText("\n");
-richTextPtr->AppendText(wxString::FromDouble(InDamageMagic,0));
-richTextPtr->AppendText("\n");
-richTextPtr->AppendText(wxString::FromDouble(InDamageNoReduct,0));
-richTextPtr->AppendText("\n");
-richTextPtr->AppendText(" (during ");
-richTextPtr->AppendText(DamageInputWindow->WithstandInput->GetValue());
-richTextPtr->AppendText(" seconds)");
-// ___ Final damage calculation.
-// ___ Check if lethal.
-HP=InDamageNoReduct>=HP ? 0 : HP-InDamageNoReduct;
-HP=InDamage>=HP ? 0 : HP-InDamage;
-HP=InDamageMagic>=HP ? 0 : HP-InDamageMagic;
+richTextPtr->WriteText(" (at "+wxString::FromDouble(timeLethalStrike,2)+" seconds)");
+if (totalHitsActual>=2000 || Attacker.IAS>=1000)
+{
+richTextPtr->BeginTextColour(wxColour(255, 0, 0));
+richTextPtr->WriteText("\nAttack rate limit is reached. Expected precision level is not guaranteed.");
+richTextPtr->EndTextColour();
+richTextPtr->WriteText(" ");
+}
+richTextPtr->AppendText("\nActual hits done: "+wxString::Format(wxT("%i"),totalHitsActual));
+richTextPtr->AppendText("\nRaw damage withstanded: "+wxString::FromDouble(InDamageRaw,0));
+richTextPtr->AppendText("\nActual damage withstanded: "+wxString::FromDouble(InDamage+InDamageMagic+InDamageNoReduct,0));
+richTextPtr->AppendText(" (during "+wxString::FromDouble(timeElapsed,2)+" seconds)");
+if (Defender.HP<0)
+{
+richTextPtr->AppendText("\nHealth lost after lethal hit: "+wxString::FromDouble(Defender.HP,0));
+}
+else
+{
+richTextPtr->AppendText("\nHealth left: "+wxString::FromDouble(Defender.HP,0));
+}
+richTextPtr->AppendText("\nMana left: "+wxString::FromDouble(Defender.MP,0));
+//Finalization. Post-analyze processes.
+//Main objects recover from temp.
+Attacker=tmpAttacker;
+Defender=tmpDefender;
 return;
+}
+
+void AnalysisLogs::TMPDamageSave()
+{
+InDamagePerCycleTMP=InDamagePerCycle;
+InDamageMagicPerCycleTMP=InDamageMagicPerCycle;
+InDamageNoReductPerCycleTMP=InDamageNoReductPerCycle;
+return;
+}
+
+void AnalysisLogs::TMPDamageLoad()
+{
+//Physical damage
+if (InDamagePerCycleTMP<InDamagePerCycle)
+{
+    InDamageRaw=InDamageRaw+(InDamagePerCycle-InDamagePerCycleTMP);
+}
+else if (InDamagePerCycleTMP>InDamagePerCycle)
+{
+    InDamageRaw=InDamageRaw-(InDamagePerCycleTMP-InDamagePerCycle);
+}
+//Magical damage
+if (InDamageMagicPerCycleTMP<InDamageMagicPerCycle)
+{
+    InDamageRaw=InDamageRaw+(InDamageMagicPerCycle-InDamageMagicPerCycleTMP);
+}
+else if (InDamageMagicPerCycleTMP>InDamageMagicPerCycle)
+{
+    InDamageRaw=InDamageRaw-(InDamagePerCycleTMP-InDamageMagicPerCycle);
+}
+//Pure damage
+if (InDamageNoReductPerCycleTMP<InDamageNoReductPerCycle)
+{
+    InDamageRaw=InDamageRaw+(InDamageNoReductPerCycle-InDamageNoReductPerCycleTMP);
+}
+else if (InDamageNoReductPerCycleTMP>InDamageNoReductPerCycle)
+{
+    InDamageRaw=InDamageRaw-(InDamageNoReductPerCycleTMP-InDamageNoReductPerCycle);
+}
+return;
+}
+
+void AnalysisLogs::FlushDamage()
+{
+// ___ Flush damage to InDamages
+InDamageNoReduct=InDamageNoReduct+InDamageNoReductPerCycle;
+InDamage=InDamage+InDamagePerCycle;
+InDamageMagic=InDamageMagic+InDamageMagicPerCycle;
+// ___ Check if lethal.
+if (lethalHit==0)
+{
+    if (Defender.HP<=0)
+    {
+        lethalHit=totalHitsActual;
+        timeLethalStrike=timeElapsed;
+    }
+}
+Defender.HP=Defender.HP-(InDamage+InDamageMagic+InDamageNoReduct-InDamagePrev);
+InDamagePrev=InDamage+InDamageMagic+InDamageNoReduct;
+}
+
+void AnalysisLogs::ApplyResists()
+{
+    // ___ Physical damage filter.
+    if (Defender.armor>0)
+    {
+        InDamagePerCycle=(InDamagePerCycle/100)*(100-getArmorReduction());
+    }
+    else if (Defender.armor<0)
+    {
+        InDamagePerCycle=(InDamagePerCycle/100)*(100+abs(getArmorReduction()));
+    }
+    // ___ Magical damage filter.
+    for (unsigned i=0;i<magicResistanceBuffer.size();i++)
+    {
+        InDamageMagicPerCycle=InDamageMagicPerCycle/100*(100-magicResistanceBuffer.at(i));
+    }
 }
 
 void AnalysisLogs::OnClose(wxCloseEvent& event)
@@ -316,4 +474,120 @@ void AnalysisLogs::OnButton1Click(wxCommandEvent& event)
 void AnalysisLogs::OnRichTextCtrl1Text(wxCommandEvent& event)
 {
     event.Skip();
+}
+
+// ___ Critical hit calculations
+void AnalysisLogs::calcCrits(std::vector<effect_critical_damage *> &myVector)
+{
+    std::pair<int,int> *critTMPPair;
+    critTMPPair=new std::pair<int,int> [myVector.size()];   //creating the array
+    // ___ Creating temporary array to restore original effects afterwards.
+    for (int i=0;i<myVector.size();i++)
+    {
+        critTMPPair[i] = std::make_pair(myVector.at(i)->chance,myVector.at(i)->damage);
+    }
+    // ___ Socalculating crits with the same damage.
+    for (int h=0;h<myVector.size();h++)
+    {
+        for (int z=0;z<myVector.size();z++)
+        {
+            if (z!=h)
+            {
+                if (myVector.at(h)->damage==myVector.at(z)->damage)
+                {
+                    if ((myVector.at(h)->chance+myVector.at(z)->chance)<=100)
+                    {
+                        myVector.at(h)->chance=myVector.at(h)->chance+myVector.at(z)->chance;
+                    }
+                    else
+                    {
+                        myVector.at(h)->chance=100;
+                    }
+                    myVector.at(z)->chance=0;
+                }
+            }
+        }
+    }
+    InDamagePerCycleCrit=InDamagePerCycle;
+    double currChanceOldAccum=0;
+    double currChanceAccum=0;
+    for (int critLVL=0;critLVL<myVector.size();critLVL++)
+    {
+        if (currChanceAccum!=100)
+        {
+            currChanceOldAccum=currChanceAccum;
+            currChanceAccum=currChanceAccum+(100-currChanceAccum)/100*(double)myVector.at(critLVL)->chance;
+            // ___ To calculate damage, we need to get it's part in main chance window:
+            // ___ For effect with chance 20% being first in hierarchy, we'll have 80% left for other effects to use: 100%-20%=80%
+            // ___ This way, we get the chance window left for other effects to utilize.
+            // ___ Lets take 50% chance to be next in hierarchy, and thats how it's chance window would be calculated: 80%/100*50%=40%.
+            // ___ Only 40% of that 50% effect could have a part in calculation.
+            // ___ Next effect of 90% will have a part of 36%, leaving 4% for other effects with lower hierarchy to utilize.
+            // ___ All crits with the same damage are stackable by percentage additively. So, if you had +50% and +50%, you'll have 100% as outcome.
+            InDamagePerCycle=InDamagePerCycle+((InDamagePerCycleCrit/100*(double)myVector.at(critLVL)->damage-InDamagePerCycleCrit)/100*(currChanceAccum-currChanceOldAccum));
+            if (InDamagePerCycle<0)
+            {
+                InDamagePerCycle=0;
+            }
+        }
+    }
+    // ___ Restoring original effect data.
+    for (int i=0;i<myVector.size();i++)
+    {
+        myVector.at(i)->chance=critTMPPair[i].first;
+        myVector.at(i)->damage=critTMPPair[i].second;
+    }
+    delete[] critTMPPair;
+    return;
+}
+
+// ___ Block calculations
+void AnalysisLogs::calcShieldBlock(std::vector<effect_block_damage *> &myVector)
+{
+    double currChanceOldAccum=0;
+    double currChanceAccum=0;
+    for (int blockLVL=0;blockLVL<myVector.size();blockLVL++)
+    {
+        if (currChanceAccum!=100)
+        {
+            currChanceOldAccum=currChanceAccum;
+            currChanceAccum=currChanceAccum+(100-currChanceAccum)/100*(double)myVector.at(blockLVL)->chance;
+            // ___ To calculate damage, we need to get it's part in the "Window of chances":
+            // ___ For effect with chance 20% being first in hierarchy, we'll have 80% left for other effects to use: 100%-20%=80%
+            // ___ TIP: As you may know, shield effects have a hierarchy. Effects with bigger "block" value are computed first.
+            // ___ This way, we get the chance window left for other effects to utilize.
+            // ___ Lets take 50% chance to be next in hierarchy, and thats how it's chance window would be calculated: 80%/100*50%=40%.
+            // ___ Only 40% of that 50% effect could have a part in calculation.
+            // ___ Next effect of 90% will have a part of 36%, leaving 4% for other effects with lower hierarchy to utilize.
+            InDamagePerCycle=InDamagePerCycle-((double)myVector.at(blockLVL)->block/100*(currChanceAccum-currChanceOldAccum));
+            if (InDamagePerCycle<0)
+            {
+                InDamagePerCycle=0;
+            }
+        }
+    }
+    return;
+}
+
+double AnalysisLogs::getArmorReduction()
+{
+    if (Defender.armor>0)
+    {
+        return ((0.06*Defender.armor)/(1+0.06*Defender.armor))*100;
+    }
+    else if (Defender.armor<0)
+    {
+        return ((0.06*Defender.armor)/(1+0.06*abs(Defender.armor)))*100;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+inline void AnalysisLogs::recalculateAttackSpeed()
+{
+    singleAttackTime=(double)(Attacker.BATD/(Attacker.IAS/100));
+    aps=1/singleAttackTime;
+    return;
 }

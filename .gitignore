@@ -1,0 +1,17 @@
+
+#Remove backup files
+BACKUP/
+
+#Remove compile junk
+obj/
+
+#Remove image files
+*.psd
+
+#Remove game-specific files
+npc_heroes.txt
+dota_english.txt
+damageanalysis_settings.txt
+
+!bin/Release/dota_english.txt
+!bin/Release/dota_english.txt

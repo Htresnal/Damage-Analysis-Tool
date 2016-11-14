@@ -22,6 +22,7 @@
 #include <fcntl.h>
 #include <wchar.h>
 #include <cstdlib>
+#include <wx/wx.h>
 #include <wx/listctrl.h>
 #include <wx/notebook.h>
 #include <wx/stattext.h>
@@ -37,6 +38,9 @@
 #include <wx/statusbr.h>
 #include <wx/textentry.h>
 #include <wx/valnum.h>
+#include "wx/grid.h"
+#include "wx/laywin.h"
+#include <wx/config.h>
 
 #include <wx/msgdlg.h>
 #include <wx/textctrl.h>
@@ -45,6 +49,17 @@
 #include <wx/valtext.h>
 #include <wx/gdicmn.h>
 #include <math.h>
+#include <gmp.h>
 #include <list>
+
+enum DamageEnum
+{
+    Physical,Magic,NoReduction
+};
+
+enum StatTypes
+{
+    Strenght,Agility,Intelligence,AllStats
+};
 
 #endif
