@@ -34,6 +34,8 @@
 			<Add option="-g" />
 			<Add option="-lgmpxx" />
 			<Add option="-lgmp" />
+			<Add option="-static-libgcc" />
+			<Add option="-static-libstdc++" />
 			<Add directory="D:/cLibs/gmp-6.1.1" />
 		</Compiler>
 		<ResourceCompiler>
