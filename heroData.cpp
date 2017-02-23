@@ -3,7 +3,7 @@ Stats can't be less than 0. To avoid that, I save all stats that go lower than 0
 done by "set", "change" and "get" preferably:
 set - overrides stats, and is only supposed to be used by the start phase of analysis. Will not take numbers less than 0;
 change - Allows user to manipulate stats, increase or decrease it.
-get - simply causes stat variable to be read, and is made mostly for effects(will return 0 if statReal is less than 0).
+get - Reads stat value(will return 0 if statReal is less than 0).
 
 How to use:
 setSTR(8); - now we have 8 str stat.
@@ -11,8 +11,8 @@ changeSTR(-20); - now we have 0 at str stat, and -12 at the statReal.
 changeSTR(40); - now we have 28 str stat, and 0 at the statReal.
 
 hero class is basically just a variable wearing dummy, thus should not cause any problems with calls
-to the "outside world" and is all-sufficient on it's own. The only dependence is the existence of heroUnit
-class objects, since it needs basic stat data and stat growth data.
+to the "outside world". The only dependence is the existence of heroUnit class objects, since it needs
+basic stat data and stat growth data.
 */
 
 #include "heroData.h"
@@ -27,52 +27,52 @@ extern heroUnit *heroAttTemp;
 
 unsigned hero::getSTR()
 {
-    return statstr;
+return statstr;
 }
 unsigned hero::getAGI()
 {
-    return statagi;
+return statagi;
 }
 unsigned hero::getINT()
 {
-    return statint;
+return statint;
 }
 
 void hero::setSTR(unsigned newStat)
 {
     statstr=newStat;
     statstrReal=0;
-    return;
+return;
 }
 
 void hero::setAGI(unsigned newStat)
 {
     statagi=newStat;
     statagiReal=0;
-    return;
+return;
 }
 
 void hero::setINT(unsigned newStat)
 {
     statint=newStat;
     statintReal=0;
-    return;
+return;
 }
 
 void hero::changeSTR(double bonusStat)
 {
-    recalcStat(Strenght, (double)changeStat(statstr, statstrReal, bonusStat));
-    return;
+    recalcStat(Strength, (double)changeStat(statstr, statstrReal, bonusStat));
+return;
 }
 void hero::changeAGI(double bonusStat)
 {
     recalcStat(Agility, (double)changeStat(statagi, statagiReal, bonusStat));
-    return;
+return;
 }
 void hero::changeINT(double bonusStat)
 {
     recalcStat(Intelligence, (double)changeStat(statint, statintReal, bonusStat));
-    return;
+return;
 }
 
 int hero::changeStat(double &Stat, int &StatReal, double newStat)
@@ -99,22 +99,22 @@ int hero::changeStat(double &Stat, int &StatReal, double newStat)
     }
     if (newStat<0)
     {
-        return (Stat==0?(tmpStat*-1):newStat);
+	return (Stat==0?(tmpStat*-1):newStat);
     }
     else
     {
-        return (Stat-tmpStat);
+	return (Stat-tmpStat);
     }
 }
 
 void hero::recalcStat(StatTypes checkStat, double bonusStat)
 {
-    return;
+return;
 }
 
 void hero::fillFromUI()
 {
-    return;
+return;
 }
 
 //////////////////////////////////////////////DEFENDER/////////////////////////////////////////////
@@ -125,7 +125,7 @@ hero_Defender::hero_Defender()
 
 void hero_Defender::recalcStat(StatTypes checkStat, double bonusStat)
 {
-    if (checkStat==Strenght)
+    if (checkStat==Strength)
     {
         int myTMPHP=maxHP;
         maxHP=maxHP+gamerule_HPPerStr*bonusStat;
@@ -143,7 +143,7 @@ void hero_Defender::recalcStat(StatTypes checkStat, double bonusStat)
         MP=((double)MP/myTMPMP*maxMP);
         MPRegen=MPRegen+gamerule_MPRegenPerInt*bonusStat;
     }
-    return;
+return;
 }
 
 void hero_Defender::fillFromUI()
@@ -158,7 +158,7 @@ void hero_Defender::fillFromUI()
     maxMP=MP=wxAtoi(Frame->StatMPInput->GetValue());
     MPRegen=wxAtof(Frame->StatMPRegenInput->GetValue());
     magicResist=wxAtoi(Frame->MagicResistanceInput->GetValue());
-    return;
+return;
 }
 
 //////////////////////////////////////////////ATTACKER/////////////////////////////////////////////
@@ -169,7 +169,7 @@ hero_Attacker::hero_Attacker()
 
 void hero_Attacker::recalcStat(StatTypes checkStat, double bonusStat)
 {
-    if (checkStat==Strenght)
+    if (checkStat==Strength)
     {
         HP=HP+gamerule_HPPerStr*bonusStat;
     }
@@ -181,7 +181,7 @@ void hero_Attacker::recalcStat(StatTypes checkStat, double bonusStat)
     {
         MP=MP+gamerule_MPPerInt*bonusStat;
     }
-    return;
+return;
 }
 
 void hero_Attacker::fillFromUI()
@@ -189,7 +189,7 @@ void hero_Attacker::fillFromUI()
     Level=wxAtoi(Frame->LevelInput2->GetValue());
     if (heroAttTemp->AttributePrimary=="DOTA_ATTRIBUTE_STRENGTH")
     {
-        mainStat=Strenght;
+        mainStat=Strength;
     }
     else if (heroAttTemp->AttributePrimary=="DOTA_ATTRIBUTE_AGILITY")
     {
@@ -206,5 +206,5 @@ void hero_Attacker::fillFromUI()
     setINT(wxAtoi(Frame->StatIntInput2->GetValue()));
     MP=wxAtoi(Frame->StatMPInput2->GetValue());
     BATD=wxAtof(Frame->BATInput->GetValue());
-    return;
+return;
 }

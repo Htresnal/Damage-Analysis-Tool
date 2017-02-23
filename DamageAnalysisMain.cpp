@@ -322,7 +322,7 @@ DamageAnalysisFrame::DamageAnalysisFrame(wxWindow* parent,wxWindowID id)
     StatMPInput2->Bind(wxEVT_KILL_FOCUS, &DamageAnalysisFrame::OnStatMP2LostFocus, this);
 
     wxInitAllImageHandlers();
-    SetClientSize(wxSize(700,510));
+    this->Fit();
 
     heroLoadFile(heroVector);// Load up hero data into the hero lists
     for (unsigned i=0;i<heroVector.size();i++)
@@ -429,7 +429,7 @@ void DamageAnalysisFrame::HeroFillForms()
     // ___ Magic resistance
     MagicResistanceInput->SetValue(wxString::FromDouble(heroTemp->MagicalResistance,0));
     // ___ Filling UI with fresh information:
-    HeroFillForms(Strenght);
+    HeroFillForms(Strength);
     HeroFillForms(Agility);
     HeroFillForms(Intelligence);
     return;
@@ -437,7 +437,7 @@ void DamageAnalysisFrame::HeroFillForms()
 
 void DamageAnalysisFrame::HeroFillForms(StatTypes checkStat)
 {
-    if (checkStat==Strenght)
+    if (checkStat==Strength)
     {
         StatHPInput->SetValue(wxString::Format(wxT("%i"),heroTemp->StatusHealth+(wxAtoi(StatStrInput->GetValue())*gamerule_HPPerStr)));
         StatHPRegenInput->SetValue(wxString::FromDouble(heroTemp->StatusHealthRegen+((double)(wxAtoi(StatStrInput->GetValue()))*gamerule_HPRegenPerStr),2));
@@ -477,7 +477,7 @@ void DamageAnalysisFrame::OnStatStrLostFocus(wxFocusEvent& event)
     {
         StatStrInput->SetValue("0");
     }
-    HeroFillForms(Strenght);
+    HeroFillForms(Strength);
     event.Skip();
 }
 
@@ -620,18 +620,15 @@ void DamageAnalysisFrame::OnMagicResistanceLostFocus(wxFocusEvent& event)
 
 void DamageAnalysisFrame::OndefenseEffectsCtrlItemActivated2(wxListEvent& event)
 {
-    int foundIndex;
-    if ((foundIndex=defenseEffectsCtrl->GetNextItem(0, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED)) != wxNOT_FOUND)
+    int foundIndex=defenseEffectsCtrl->GetNextItem(0, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+    if (foundIndex != wxNOT_FOUND || defenseEffectsCtrl->GetItemData(foundIndex)!=NULL)
     {
-        if (defenseEffectsCtrl->GetItemData(foundIndex)!=NULL)
-        {
-            // This function should(and will) ignore the first element, as its just a placeholder, to fit the drop down menu.
-            Frame2->currEditObject=(void *)event.GetItem().GetData();
-            ((basic_effect *)(Frame2->currEditObject))->FillPropertiesGrid(Frame2);
-            Frame2->Show();
-            Frame2->Restore();
-            Frame2->Raise();
-        }
+        // This function should(and will) ignore the first element, as its just a placeholder, to fit the drop down menu.
+        Frame2->currEditObject=(void *)event.GetItem().GetData();
+        ((basic_effect *)(Frame2->currEditObject))->FillPropertiesGrid(Frame2);
+        Frame2->Show();
+        Frame2->Restore();
+        Frame2->Raise();
     }
     event.Skip();
 }
@@ -700,7 +697,7 @@ void DamageAnalysisFrame::AttackerFillForms()
     }
     BATInput->SetValue(wxString::FromDouble(heroAttTemp->AttackRate,2));
     // ___ Filling UI with fresh information:
-    AttackerFillForms(Strenght);
+    AttackerFillForms(Strength);
     AttackerFillForms(Agility);
     AttackerFillForms(Intelligence);
     return;
@@ -708,7 +705,7 @@ void DamageAnalysisFrame::AttackerFillForms()
 
 void DamageAnalysisFrame::AttackerFillForms(StatTypes checkStat)
 {
-    if (checkStat==Strenght)
+    if (checkStat==Strength)
     {
         StatHPInput2->SetValue(wxString::Format(wxT("%i"),heroAttTemp->StatusHealth+gamerule_HPPerStr*(wxAtoi(StatStrInput2->GetValue()))));
         if (heroAttTemp->AttributePrimary=="DOTA_ATTRIBUTE_STRENGTH")
@@ -764,7 +761,7 @@ void DamageAnalysisFrame::OnStatStr2LostFocus(wxFocusEvent& event)
     {
         StatStrInput2->SetValue("0");
     }
-    AttackerFillForms(Strenght);
+    AttackerFillForms(Strength);
     event.Skip();
 }
 

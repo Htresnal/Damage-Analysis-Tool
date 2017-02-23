@@ -56,8 +56,8 @@ void baseUnit::loadUnitFromStream(std::fstream &myfile, std::string &lineoutAttr
         if (lineoutAttr.find_first_of('"')!=std::string::npos)
         {
             unsigned spos, epos;
-            int tempInt;
-            std::string lineoutValue, tempString;
+            int tmpI;
+            std::string lineoutValue;
             lineoutValue=lineoutAttr;
             double tempDouble;
             spos=lineoutAttr.find_first_not_of('"');
@@ -78,8 +78,8 @@ void baseUnit::loadUnitFromStream(std::fstream &myfile, std::string &lineoutAttr
                     itUnitDataMapI=unitDataMapI.find(lineoutAttr);
                     if (itUnitDataMapI!=unitDataMapI.end())
                     {
-                        tempInt=atoi(lineoutValue.c_str());
-                        (*unitDataMapI[lineoutAttr])=tempInt;
+                        tmpI=atoi(lineoutValue.c_str());
+                        (*unitDataMapI[lineoutAttr])=tmpI;
                     }
                     itUnitDataMapS=unitDataMapS.find(lineoutAttr);
                     if (itUnitDataMapS!=unitDataMapS.end())
@@ -101,7 +101,7 @@ void baseUnit::loadUnitFromStream(std::fstream &myfile, std::string &lineoutAttr
         int nextHeroPos=lineoutAttr.find("npc_dota_hero_");
         if (lineoutAttr.find("npc_dota_hero_")!=std::wstring::npos && nextHeroPos<=2)
         {
-            return;
+		return;
         }
     }
 return;

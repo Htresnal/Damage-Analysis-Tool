@@ -5,6 +5,9 @@
 #include "effectsProperties.h"
 #include "AnalysisLogs.h"
 
+const int maxRanks=12;
+const int minRanks=-5;
+
 class effectsProperties;
 
 class basic_effect
@@ -530,9 +533,6 @@ public:
     void FillPropertiesGrid(effectsProperties *);
     effect_nethertoxin *getnewCopy();
 };
-
-const int maxRanks=12;
-const int minRanks=-5;
 
 inline int isLessThanDamage(const effect_critical_damage *crit1, const effect_critical_damage *crit2)
 {

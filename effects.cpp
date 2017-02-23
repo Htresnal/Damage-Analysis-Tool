@@ -44,9 +44,6 @@ std::vector<effect_critical_damage *> critEffects;
 std::vector<effect_block_damage *> shieldBlockEffects;
 std::vector<double> magicResistanceBuffer;
 
-//Days day = Saturday;
-//if(day == Saturday)
-
 extern double ARReduct, InDamageBase, InDamagePerCycleCrit, InDamage, InDamageRaw, InDamageMagic, InDamageNoReduct, aps, singleAttackTime, currAps, currSingleAttackTime, InDamagePerCycle, InDamageMagicPerCycle, InDamageNoReductPerCycle;
 extern int DoDoubleHit, DefendercurrMaxHP;
 extern unsigned WhiteDmg;
@@ -134,17 +131,17 @@ double *basic_effect::checkDamageType()
 // Here, the damage type is being set. This function is only used by the damage dealing effects.
     if (damageType==Physical)
     {
-        return &InDamagePerCycle;
+	return &InDamagePerCycle;
     }
     else if (damageType==Magic)
     {
-        return &InDamageMagicPerCycle;
+	return &InDamageMagicPerCycle;
     }
     else if (damageType==NoReduction)
     {
-        return &InDamageNoReductPerCycle;
+	return &InDamageNoReductPerCycle;
     }
-    return 0;
+return 0;
 }
 
 void basic_effect::FillPropertiesGrid(effectsProperties *callBackEffBase)
@@ -170,7 +167,7 @@ temporary=0; // Skills with 1 would be deleted out of the effect vector(list of 
 statbonus=2; // Default stat value.
 statbonusString="Bonus to stats"; // Effect description string in the properties UI.
 mainStat=AllStats; // Selected stat. Default is all 3 stats.
-statStrings[0] = "Strenght";
+statStrings[0] = "Strength";
 statStrings[1] = "Agility";
 statStrings[2] = "Intelligence";
 statStrings[3] = "All stats";// Text array(Numbers correlate with the effect actions).
@@ -188,7 +185,7 @@ void effect_stats_bonus_defender::Init()
 {
     // Init() is run once, before the emulation begins, but there is are rare occasions, when effects can,
     // make their own child copies. They could be Init()'ed at any time, during the emulation time.
-    if (mainStat==Strenght)
+    if (mainStat==Strength)
     {
         Defender.changeSTR(statbonus);
     }
@@ -206,7 +203,7 @@ void effect_stats_bonus_defender::Init()
         Defender.changeAGI(statbonus);
         Defender.changeINT(statbonus);
     }
-    return;
+return;
 }
 
 void effect_stats_bonus_defender::FillPropertiesGrid(effectsProperties *callBackEffBase)
@@ -251,7 +248,7 @@ void effect_reduce_damage::DoDoubleAttack()
     // Some effects act differently during proc of the "second hit", for example - poisons,
     // or effects, that require time to do their work.
     Continue();
-    return;
+return;
 }
 
 void effect_reduce_damage::FillPropertiesGrid(effectsProperties *callBackEffBase)
@@ -322,7 +319,7 @@ void effect_armor_per_sec::Init()
     armorMultiplier=0;
     changedTimes=0;
     firstHit=1;
-    return;
+return;
 }
 
 void effect_armor_per_sec::Continue()
@@ -330,7 +327,7 @@ void effect_armor_per_sec::Continue()
     if (firstHit!=0)
     {
         firstHit=0;
-        return;
+	return;
     }
     if (durationTimer!=0)
     {
@@ -533,7 +530,7 @@ void effect_mana_shield::Continue()
 
 effect_mana_shield* effect_mana_shield::getnewCopy()
 {
-    return new effect_mana_shield(*this);
+return new effect_mana_shield(*this);
 // How to use: effect_mana_shield *tmpEff = &(baseEff->getnewCopy());
 }
 
@@ -548,7 +545,7 @@ void effect_mana_shield::FillPropertiesGrid(effectsProperties *callBackEffBase)
 void effect_mana_shield::DoDoubleAttack()
 {
     Continue();
-    return;
+return;
 }
 
 // effect_magic_resistance
@@ -575,7 +572,7 @@ void effect_magic_resistance::Init()
 
 effect_magic_resistance* effect_magic_resistance::getnewCopy()
 {
-    return new effect_magic_resistance(*this);
+return new effect_magic_resistance(*this);
 // How to use: effect_magic_resistance *tmpEff = &(baseEff->getnewCopy());
 }
 
@@ -691,9 +688,9 @@ void effect_bonus_hpregen_armor_ph_dummy::Continue()
     if (duration<=0)
     {
         disabled=1;
-        return;
+	return;
     }
-    return;
+return;
 }
 
 // effect_block_damage
@@ -741,7 +738,7 @@ temporary=0;
 statbonus=2;
 statbonusString="Bonus to stats";
 mainStat=AllStats;
-statStrings[0] = "Strenght";
+statStrings[0] = "Strength";
 statStrings[1] = "Agility";
 statStrings[2] = "Intelligence";
 statStrings[3] = "All stats";
@@ -756,10 +753,10 @@ return new effect_stats_bonus_attacker(*this);
 
 void effect_stats_bonus_attacker::Init()
 {
-    if (mainStat==Strenght)
+    if (mainStat==Strength)
     {
         Attacker.changeSTR(statbonus);
-        if (Attacker.mainStat==Strenght)
+        if (Attacker.mainStat==Strength)
         {
             WhiteDmg=WhiteDmg+(statbonus);
         }
@@ -789,7 +786,7 @@ void effect_stats_bonus_attacker::Init()
         Attacker.changeINT(statbonus);
         WhiteDmg=WhiteDmg+(statbonus);
     }
-    return;
+return;
 }
 
 void effect_stats_bonus_attacker::FillPropertiesGrid(effectsProperties *callBackEffBase)
@@ -829,7 +826,7 @@ return;
 void effect_damage::DoDoubleHit()
 {
     Continue();
-    return;
+return;
 }
 
 void effect_damage::FillPropertiesGrid(effectsProperties *callBackEffBase)
@@ -871,7 +868,7 @@ return;
 void effect_damage_proc::DoDoubleHit()
 {
     Continue();
-    return;
+return;
 }
 
 void effect_damage_proc::FillPropertiesGrid(effectsProperties *callBackEffBase)
@@ -895,7 +892,7 @@ damageType=NoReduction;
 percentage=80;
 percentageString="% as damage";
 mainStat=Intelligence;
-statStrings[0] = "Strenght";
+statStrings[0] = "Strength";
 statStrings[1] = "Agility";
 statStrings[2] = "Intelligence";
 statStrings[3] = "Health";
@@ -940,7 +937,7 @@ return;
 void effect_stats_as_damage::DoDoubleHit()
 {
     Continue();
-    return;
+return;
 }
 
 void effect_stats_as_damage::FillPropertiesGrid(effectsProperties *callBackEffBase)
@@ -964,7 +961,7 @@ damageType=Physical;
 percentage=125;
 percentageString="% of stat as damage";
 mainStat=Agility;
-statStrings[0] = "Strenght";
+statStrings[0] = "Strength";
 statStrings[1] = "Agility";
 statStrings[2] = "Intelligence";
 rowName="Stat type";
@@ -999,7 +996,7 @@ return;
 void effect_stat_crit::DoDoubleHit()
 {
     Continue();
-    return;
+return;
 }
 
 void effect_stat_crit::FillPropertiesGrid(effectsProperties *callBackEffBase)
@@ -1081,7 +1078,7 @@ void effect_critical_damage_stackable::Continue()
 void effect_critical_damage_stackable::DoDoubleAttack()
 {
     Continue();
-    return;
+return;
 }
 
 // effect_feast
@@ -1122,7 +1119,7 @@ void effect_feast::Continue()
 void effect_feast::DoDoubleAttack()
 {
     Continue();
-    return;
+return;
 }
 
 // effect_manaburn
@@ -1165,7 +1162,7 @@ return;
 void effect_manaburn::DoDoubleHit()
 {
     Continue();
-    return;
+return;
 }
 
 void effect_manaburn::FillPropertiesGrid(effectsProperties *callBackEffBase)
@@ -1246,7 +1243,7 @@ void effect_increase_IAS::Continue()
 void effect_increase_IAS::DoDoubleAttack()
 {
     Continue();
-    return;
+return;
 }
 
 void effect_increase_IAS::FillPropertiesGrid(effectsProperties *callBackEffBase)
@@ -1285,7 +1282,7 @@ void effect_increase_damage::Continue()
 void effect_increase_damage::DoDoubleAttack()
 {
     Continue();
-    return;
+return;
 }
 
 void effect_increase_damage::FillPropertiesGrid(effectsProperties *callBackEffBase)
@@ -1307,8 +1304,8 @@ duration=15;
 durationString="Duration, sec.";
 statsteal=6;
 statstealString="Stats per hit";
-mainStat=Strenght;
-statStrings[0] = "Strenght";
+mainStat=Strength;
+statStrings[0] = "Strength";
 statStrings[1] = "Agility";
 statStrings[2] = "Intelligence";
 rowName="Stat gain";
@@ -1329,13 +1326,13 @@ void effect_stat_steal_master::Continue()
     newStat_Steal->initRank=initRank;
     newStat_Steal->mainStat=mainStat;
     newStat_Steal->Init();
-    return;
+return;
 }
 
 void effect_stat_steal_master::DoDoubleAttack()
 {
     Continue();
-    return;
+return;
 }
 
 void effect_stat_steal_master::FillPropertiesGrid(effectsProperties *callBackEffBase)
@@ -1357,7 +1354,7 @@ disabled=0;
 temporary=1;
 duration=0;//Overwrited by master effect.
 statsteal=0;//Overwrited by master effect.
-mainStat=Strenght;//Overwrited by master effect.
+mainStat=Strength;//Overwrited by master effect.
 }
 
 effect_stat_steal* effect_stat_steal::getnewCopy()
@@ -1368,7 +1365,7 @@ return new effect_stat_steal(*this);
 
 void effect_stat_steal::Init()
 {
-    if (mainStat==Strenght)
+    if (mainStat==Strength)
     {
         Attacker.changeSTR(statsteal);
     }
@@ -1382,7 +1379,7 @@ void effect_stat_steal::Init()
         Attacker.changeINT(statsteal);
     }
     WhiteDmg=WhiteDmg+(statsteal);
-    return;
+return;
 }
 
 void effect_stat_steal::Continue()
@@ -1390,11 +1387,11 @@ void effect_stat_steal::Continue()
     if (duration>currSingleAttackTime)
     {
         duration=duration-currSingleAttackTime;
-        return;
+	return;
     }
     else
     {
-        if (mainStat==Strenght)
+        if (mainStat==Strength)
         {
             Attacker.changeSTR(statsteal*-1);
         }
@@ -1410,7 +1407,7 @@ void effect_stat_steal::Continue()
         WhiteDmg=WhiteDmg-statsteal;
         disabled=1;
     }
-    return;
+return;
 }
 
 // effect_stat_steal_target_master
@@ -1441,13 +1438,13 @@ void effect_stat_steal_target_master::Continue()
     newStat_Steal->statsteal=statsteal;
     newStat_Steal->initRank=initRank;
     newStat_Steal->Init();
-    return;
+return;
 }
 
 void effect_stat_steal_target_master::DoDoubleAttack()
 {
     Continue();
-    return;
+return;
 }
 
 void effect_stat_steal_target_master::FillPropertiesGrid(effectsProperties *callBackEffBase)
@@ -1481,7 +1478,7 @@ void effect_stat_steal_target::Init()
     Defender.changeSTR(statsteal*-1);
     Defender.changeAGI(statsteal*-1);
     Defender.changeINT(statsteal*-1);
-    return;
+return;
 }
 
 void effect_stat_steal_target::Continue()
@@ -1489,7 +1486,7 @@ void effect_stat_steal_target::Continue()
     if (duration>currSingleAttackTime)
     {
         duration=duration-currSingleAttackTime;
-        return;
+	return;
     }
     else
     {
@@ -1498,7 +1495,7 @@ void effect_stat_steal_target::Continue()
         Defender.changeINT(statsteal);
         disabled=1;
     }
-    return;
+return;
 }
 
 // effect_fury_swipes
@@ -1525,7 +1522,7 @@ return new effect_fury_swipes(*this);
 void effect_fury_swipes::Init()
 {
     stacks=0;
-    return;
+return;
 }
 
 void effect_fury_swipes::Continue()
@@ -1545,7 +1542,7 @@ void effect_fury_swipes::DoDoubleAttack()
     double *damageOfType=checkDamageType();
     stacks=stacks+1;
     *damageOfType=*damageOfType+damage*stacks;
-    return;
+return;
 }
 
 void effect_fury_swipes::FillPropertiesGrid(effectsProperties *callBackEffBase)
@@ -1585,7 +1582,7 @@ void effect_poison::Init()
     damageBuffer=0;
     damageMultiplier=0;
     damagepool=(double)damage*duration/interval;
-    return;
+return;
 }
 
 void effect_poison::Continue()
@@ -1595,7 +1592,7 @@ void effect_poison::Continue()
     if (currSingleAttackTime>=duration)
     {
         *damageOfType=*damageOfType+damagepool;
-    return;
+return;
     }
     asynchronousAttacks=speedRatio+damageBuffer;
     damageBuffer=modf (asynchronousAttacks,&damageMultiplier);
@@ -1690,7 +1687,7 @@ void effect_poison_stackable::Init()
     damageBuffer=0;
     damageMultiplier=0;
     asynchronousAttacks=0;
-    return;
+return;
 }
 
 void effect_poison_stackable::Continue()
@@ -1715,7 +1712,7 @@ void effect_poison_stackable::Continue()
             duration=duration-damageMultiplier;
         }
     }
-    return;
+return;
 }
 
 // effect_poison_hppercent
@@ -1748,7 +1745,7 @@ void effect_poison_hppercent::Init()
     damageBuffer=0;
     damageMultiplier=0;
     asynchronousAttacks=0;
-    return;
+return;
 }
 
 void effect_poison_hppercent::Continue()
@@ -1811,14 +1808,14 @@ void effect_double_attack::Continue()
     if (cooldown<=currSingleAttackTime)// If attacks are too long - don't bother with calculation.
     {
         DoDoubleHit=DoDoubleHit+1;
-        return;
+	return;
     }
     asynchronousAttacks=asynchronousAttacks+currSingleAttackTime;// Place current attack rate in the time buffer.
     if (asynchronousAttacks>=cooldown)// If any attacks are awaiting for release
     {
         asynchronousAttacks=0;
         DoDoubleHit=DoDoubleHit+1;
-        return;
+	return;
     }
 }
 
@@ -1854,7 +1851,7 @@ void effect_heartstopper_aura::Init()
 {
     damageBuffer=0;
     damageMultiplier=0;
-    return;
+return;
 }
 
 void effect_heartstopper_aura::Continue()
@@ -1903,14 +1900,14 @@ void effect_nethertoxin::Continue()
 {
     double *damageOfType=checkDamageType();
     double tmpDamage=baseDamage;
-    double tmpParts=(double)Defender.HP/((double)Defender.maxHP/5); // We take the target's health,
+    double tmpParts=(double)Defender.HP/((double)Defender.maxHP/5); // We take the target's max health,
     //find it's 1/5th part, then divide current hp by it. This way we get, what the bonus damage will be.
     for (int i=5-tmpParts;i>0;i--)
     {
         tmpDamage=tmpDamage+tmpDamage;
     }
     *damageOfType=*damageOfType+(int)tmpDamage;
-    return;
+return;
 }
 
 void effect_nethertoxin::FillPropertiesGrid(effectsProperties *callBackEffBase)

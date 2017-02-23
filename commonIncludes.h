@@ -49,8 +49,6 @@
 #include <wx/valtext.h>
 #include <wx/gdicmn.h>
 #include <math.h>
-#include <gmp.h>
-#include <gmpxx.h>
 #include <list>
 
 enum DamageEnum
@@ -60,7 +58,7 @@ enum DamageEnum
 
 enum StatTypes
 {
-    Strenght,Agility,Intelligence,AllStats
+    Strength,Agility,Intelligence,AllStats
 };
 
 #endif

@@ -7,7 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Release">
-				<Option output="bin/Release/DamageAnalysis" prefix_auto="1" extension_auto="1" />
+				<Option output="./DamageAnalysis" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
@@ -16,6 +16,8 @@
 					<Add option="-Wall" />
 					<Add option="-std=c++11" />
 					<Add option="-g" />
+					<Add option="-static-libgcc" />
+					<Add option="-static-libstdc++" />
 					<Add directory="D:/wxWidgets-3.1.0/lib/gcc_dll/mswu" />
 					<Add directory="D:/wxWidgets-3.1.0/include" />
 				</Compiler>
@@ -24,29 +26,18 @@
 					<Add directory="D:/wxWidgets-3.1.0/include" />
 				</ResourceCompiler>
 				<Linker>
+					<Add library="D:/wxWidgets-3.1.0/lib/gcc_dll/libwxbase31u.a" />
+					<Add library="D:/wxWidgets-3.1.0/lib/gcc_dll/libwxmsw31u_adv.a" />
+					<Add library="D:/wxWidgets-3.1.0/lib/gcc_dll/libwxmsw31u_aui.a" />
+					<Add library="D:/wxWidgets-3.1.0/lib/gcc_dll/libwxmsw31u_core.a" />
+					<Add library="D:/wxWidgets-3.1.0/lib/gcc_dll/libwxmsw31u_propgrid.a" />
+					<Add library="D:/wxWidgets-3.1.0/lib/gcc_dll/libwxpng.a" />
+					<Add library="D:/wxWidgets-3.1.0/lib/gcc_dll/libwxmsw31u_ribbon.a" />
+					<Add library="D:/wxWidgets-3.1.0/lib/gcc_dll/libwxmsw31u_richtext.a" />
 					<Add directory="D:/wxWidgets-3.1.0/lib/gcc_dll" />
 				</Linker>
 			</Target>
 		</Build>
-		<Compiler>
-			<Add option="-Wall" />
-			<Add option="-std=c++11" />
-			<Add option="-g" />
-			<Add option="-lgmpxx" />
-			<Add option="-lgmp" />
-			<Add option="-static-libgcc" />
-			<Add option="-static-libstdc++" />
-			<Add directory="D:/cLibs/gmp-6.1.1" />
-		</Compiler>
-		<ResourceCompiler>
-			<Add directory="D:/cLibs/gmp-6.1.1" />
-		</ResourceCompiler>
-		<Linker>
-			<Add library="D:/wxWidgets-3.1.0/lib/gcc_dll/libwxmsw31u.a" />
-			<Add library="../../cLibs/gmp-6.1.1/.libs/libgmpxx.a" />
-			<Add library="../../cLibs/gmp-6.1.1/.libs/libgmp.a" />
-			<Add directory="../../cLibs/gmp-6.1.1/.libs" />
-		</Linker>
 		<Unit filename="AnalysisLogs.cpp" />
 		<Unit filename="AnalysisLogs.h" />
 		<Unit filename="DamageAnalysisApp.cpp" />
@@ -93,6 +84,7 @@
 				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
 				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
 			</AutoVersioning>
+			<editor_config active="1" use_tabs="1" tab_indents="1" tab_width="4" indent="4" eol_mode="0" />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

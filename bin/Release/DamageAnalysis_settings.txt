@@ -1,9 +1,0 @@
-"gamerule_HPPerStr" "20"
-"gamerule_MPPerInt" "12"
-"gamerule_StartHP" "200"
-"gamerule_StartIAS" "100"
-"gamerule_StartMP" "50"
-
-"gamerule_ArmorPerAgi" "0.14"
-"gamerule_HPRegenPerStr" "0.03"
-"gamerule_MPRegenPerInt" "0.04"

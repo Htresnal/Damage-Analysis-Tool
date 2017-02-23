@@ -52,7 +52,6 @@ GameSettings::GameSettings(wxWindow* parent,wxWindowID id,const wxPoint& pos,con
 	Grid1->SetDefaultCellFont( Grid1->GetFont() );
 	Grid1->SetDefaultCellTextColour( Grid1->GetForegroundColour() );
 
-	Connect(ID_GRID1,wxEVT_GRID_CELL_CHANGED,(wxObjectEventFunction)&GameSettings::OnSettingsGrid1CellChange);
 	Connect(wxID_ANY,wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&GameSettings::OnClose);
 	//*)
 
