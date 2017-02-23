@@ -26,5 +26,11 @@ bool DamageAnalysisApp::OnInit()
     bool wxsOK = true;
     wxInitAllImageHandlers();
     //*)
+    if (wxsOK)
+	{
+		Frame=new DamageAnalysisFrame(NULL, wxNewId());
+		Frame->Show();
+		SetTopWindow(Frame);
+	}
     return wxsOK;
 }
