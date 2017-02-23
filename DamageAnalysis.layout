@@ -2,14 +2,9 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Release" />
-	<File name="heroData.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
+	<File name="GameSettings.cpp" open="1" top="1" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="187" topLine="5" />
-		</Cursor>
-	</File>
-	<File name="GameSettings.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="9575" topLine="112" />
+			<Cursor1 position="8551" topLine="208" />
 		</Cursor>
 	</File>
 	<File name="effectsProperties.h" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -44,7 +39,7 @@
 	</File>
 	<File name="effectsProperties.cpp" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="10212" topLine="251" />
+			<Cursor1 position="9369" topLine="236" />
 		</Cursor>
 	</File>
 	<File name="DamageAnalysisApp.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -54,7 +49,7 @@
 	</File>
 	<File name="effects.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="53419" topLine="1889" />
+			<Cursor1 position="53419" topLine="1885" />
 		</Cursor>
 	</File>
 	<File name="commonIncludes.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -72,9 +67,9 @@
 			<Cursor1 position="1749" topLine="30" />
 		</Cursor>
 	</File>
-	<File name="DamageAnalysisApp.cpp" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="DamageAnalysisApp.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="663" topLine="14" />
+			<Cursor1 position="663" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="heroDataLoad.cpp" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -120,6 +115,11 @@
 	<File name="Vectors.cpp" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="3955" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="heroData.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="187" topLine="5" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
