@@ -54,6 +54,7 @@ GameSettings::GameSettings(wxWindow* parent,wxWindowID id,const wxPoint& pos,con
 
 	Connect(wxID_ANY,wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&GameSettings::OnClose);
 	//*)
+	Connect(ID_GRID1,wxEVT_GRID_CELL_CHANGED,(wxObjectEventFunction)&GameSettings::OnSettingsGrid1CellChange);
 
     //Initializing Game rules
     GetGameRules();

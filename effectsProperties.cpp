@@ -79,7 +79,7 @@ effectsProperties::effectsProperties(wxWindow* parent,wxWindowID id,const wxPoin
 	BoxSizer1->Fit(Panel1);
 	BoxSizer1->SetSizeHints(Panel1);
 
-//	Connect(ID_GRID1,wxEVT_GRID_CELL_CHANGE,(wxObjectEventFunction)&effectsProperties::OnGrid1CellChange);
+	Connect(ID_GRID1,wxEVT_GRID_CELL_CHANGED,(wxObjectEventFunction)&effectsProperties::OnGrid1CellChange);
 	Connect(ID_GRID1,wxEVT_GRID_SELECT_CELL,(wxObjectEventFunction)&effectsProperties::OnGrid1CellSelect);
 	Grid1->Connect(wxEVT_KEY_DOWN,(wxObjectEventFunction)&effectsProperties::OnGrid1KeyDown1,0,this);
 	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&effectsProperties::OnButton2Click);
