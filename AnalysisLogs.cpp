@@ -80,7 +80,7 @@ AnalysisLogs::~AnalysisLogs()
 void AnalysisLogs::RunAnalysis()
 {
     RichTextCtrl1->Clear();
-    DamageLogFill((void *)RichTextCtrl1); // Отдаём функции RichTextCtrl.
+    DamageLogFill((void *)RichTextCtrl1);
     Show();
     Restore();
     Raise();
@@ -579,7 +579,7 @@ double AnalysisLogs::getArmorReduction()
     }
 }
 
-inline void AnalysisLogs::recalculateAttackSpeed()
+void AnalysisLogs::recalculateAttackSpeed()
 {
     singleAttackTime=(double)(Attacker.BATD/(Attacker.IAS/100));
     aps=1/singleAttackTime;

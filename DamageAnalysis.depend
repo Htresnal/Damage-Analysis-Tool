@@ -1834,7 +1834,7 @@
 
 1412631243 d:\wxwidgets-3.0.2\include\wx\msw\rcdefs.h
 
-1487794246 source:d:\cprojects\damageanalysis\damageanalysismain.cpp
+1495223002 source:d:\cprojects\damageanalysis\damageanalysismain.cpp
 	<wx/bitmap.h>
 	<wx/icon.h>
 	<wx/settings.h>
@@ -2597,12 +2597,12 @@
 1454868666 d:\cprojects\damageanalysis\analysislog.h
 	<wx/panel.h>
 
-1487793667 source:d:\cprojects\damageanalysis\analysislogs.cpp
+1495179546 source:d:\cprojects\damageanalysis\analysislogs.cpp
 	<wx/intl.h>
 	<wx/string.h>
 	"AnalysisLogs.h"
 
-1464530222 d:\cprojects\damageanalysis\analysislogs.h
+1488439024 d:\cprojects\damageanalysis\analysislogs.h
 	<wx/sizer.h>
 	<wx/panel.h>
 	<wx/richtext/richtextctrl.h>
@@ -2640,7 +2640,7 @@
 	<wx/frame.h>
 	"DamageAnalysisMain.h"
 
-1487794204 d:\cprojects\damageanalysis\commonincludes.h
+1495225044 d:\cprojects\damageanalysis\commonincludes.h
 	<vector>
 	<string>
 	<fstream>
@@ -2657,6 +2657,7 @@
 	<wctype.h>
 	<cstdio>
 	<ios>
+	<queue>
 	<io.h>
 	<fcntl.h>
 	<wchar.h>
@@ -2689,7 +2690,7 @@
 	<math.h>
 	<list>
 
-1487794392 source:d:\cprojects\damageanalysis\effects.cpp
+1495224768 source:d:\cprojects\damageanalysis\effects.cpp
 	"effects.h"
 	"AnalysisLogs.h"
 	"heroData.h"
@@ -2710,21 +2711,21 @@
 	"heroDataLoad.cpp"
 	"effects.cpp"
 
-1487793173 d:\cprojects\damageanalysis\effects.h
+1495223796 d:\cprojects\damageanalysis\effects.h
 	"commonIncludes.h"
 	"effectsProperties.h"
 	"AnalysisLogs.h"
 
-1458158052 d:\cprojects\damageanalysis\herodataload.h
+1495203777 d:\cprojects\damageanalysis\herodataload.h
 	"Vectors.h"
 
-1460360841 d:\cprojects\damageanalysis\vectors.h
+1495203653 d:\cprojects\damageanalysis\vectors.h
 	"commonIncludes.h"
 
-1487793047 source:d:\cprojects\damageanalysis\herodataload.cpp
+1495218005 source:d:\cprojects\damageanalysis\herodataload.cpp
 	"heroDataLoad.h"
 
-1487791257 source:d:\cprojects\damageanalysis\vectors.cpp
+1495217661 source:d:\cprojects\damageanalysis\vectors.cpp
 	"Vectors.h"
 
 1458985776 d:\cprojects\damageanalysis\gridcellchoicerenderer.h
@@ -3390,7 +3391,7 @@
 	"DamageAnalysisMain.h"
 	"Vectors.h"
 
-1487794280 source:d:\cprojects\damageanalysis\herodata.cpp
+1495202298 source:d:\cprojects\damageanalysis\herodata.cpp
 	"heroData.h"
 
 1462434727 d:\cprojects\damageanalysis\gamesettings.h
@@ -3399,7 +3400,7 @@
 	"commonIncludes.h"
 	"DamageAnalysisMain.h"
 
-1486147475 source:d:\cprojects\damageanalysis\gamesettings.cpp
+1495209336 source:d:\cprojects\damageanalysis\gamesettings.cpp
 	"GameSettings.h"
 	<wx/intl.h>
 	<wx/string.h>
@@ -5581,7 +5582,7 @@
 	"wx/validate.h"
 	"wx/valtext.h"
 
-1456695217 d:\wxwidgets-3.1.0\include\wx\app.h
+1488439753 d:\wxwidgets-3.1.0\include\wx\app.h
 	"wx/event.h"
 	"wx/eventfilter.h"
 	"wx/build.h"

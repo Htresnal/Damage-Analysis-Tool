@@ -28,6 +28,12 @@ virtual void DoDoubleAttack();
 virtual void FillPropertiesGrid(effectsProperties *);
 virtual double *checkDamageType(); //Function that returns address for a pointer;
 virtual basic_effect *getnewCopy(); //Make new object of this class and return its address.
+
+friend bool operator>(const basic_effect &e1, const basic_effect &e2); //Turn effects rank-comparable
+friend bool operator<=(const basic_effect &e1, const basic_effect &e2);
+
+friend bool operator<(const basic_effect &e1, const basic_effect &e2);
+friend bool operator>=(const basic_effect &e1, const basic_effect &e2);
 };
 
 // ___ Defense effects

@@ -13,6 +13,17 @@ npc_heroes.txt
 dota_english.txt
 damageanalysis_settings.txt
 
-!bin/Release/dota_english.txt
-!bin/Release/npc_heroes.txt
-!bin/Release/damageanalysis_settings.txt
+dota_english.txt
+npc_heroes.txt
+damageanalysis_settings.txt
+wxbase310u_gcc_custom.dll
+libgcc_s_dw2-1.dll
+libstdc++-6.dll
+wxbase310u_xml_gcc_custom.dll
+wxbase310u_adv_gcc_custom.dll
+wxbase310u_aui_gcc_custom.dll
+wxbase310u_core_gcc_custom.dll
+wxbase310u_html_gcc_custom.dll
+wxbase310u_propgrid_gcc_custom.dll
+wxbase310u_ribbon_gcc_custom.dll
+wxbase310u_richtext_gcc_custom.dll

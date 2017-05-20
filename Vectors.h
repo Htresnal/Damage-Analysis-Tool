@@ -20,9 +20,9 @@ public:
 	int * tempInt;
 	double * tempDouble;
 	std::string * tempString;
-	std::map<std::string,int*>unitDataMapI;
-	std::map<std::string,double*>unitDataMapD;
-	std::map<std::string,std::string*>unitDataMapS;
+	std::map<std::string,int *>unitDataMapI;
+	std::map<std::string,double *>unitDataMapD;
+	std::map<std::string,std::string *>unitDataMapS;
     virtual void loadUnitFromStream(std::fstream &, std::string &);
     baseUnit();
 };

@@ -28,7 +28,7 @@ public:
     void TMPDamageLoad();
     void FlushDamage();
     void ApplyResists();
-    inline void recalculateAttackSpeed();
+    void recalculateAttackSpeed();
     double getArmorReduction();
     void calcCrits(std::vector<effect_critical_damage *> &);
     void calcShieldBlock(std::vector<effect_block_damage *> &);

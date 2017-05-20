@@ -31,7 +31,7 @@ extern heroUnit *heroTemp;
 extern heroUnit *heroAttTemp;
 hero_Defender Defender;
 hero_Attacker Attacker;
-extern std::vector<heroUnit> heroVector;
+extern std::array<heroUnit, HERO_COUNT> heroVector;
 
 extern std::map<std::string,basic_effect *> effectMapAttack;
 extern std::map<std::string,basic_effect *> effectMapDefense;
@@ -327,9 +327,13 @@ DamageAnalysisFrame::DamageAnalysisFrame(wxWindow* parent,wxWindowID id)
     heroLoadFile(heroVector);// Load up hero data into the hero lists
     for (unsigned i=0;i<heroVector.size();i++)
     {
+    	if (heroVector[i].unitName[0]==9) // Magic trick. Will cut off empty arrays off the choice list.
+    	{
+		break;
+		}
         heroUnit *heroPtr=&heroVector[i];
-        Choice1->Append(heroVector[i].unitName,heroPtr);
-        Choice2->Append(heroVector[i].unitName,heroPtr);
+        Choice1->Append(heroVector[i].unitName, heroPtr);
+        Choice2->Append(heroVector[i].unitName, heroPtr);
     }
     attackEffects.reserve(20);
     defenceEffects.reserve(20);

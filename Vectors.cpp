@@ -3,8 +3,6 @@
 extern int gamerule_HPPerStr, gamerule_MPPerInt, gamerule_StartHP, gamerule_StartMP, gamerule_StartIAS;
 extern double gamerule_ArmorPerAgi, gamerule_HPRegenPerStr, gamerule_MPRegenPerInt;
 
-heroUnit *heroTemp;
-heroUnit *heroAttTemp;
 extern std::string &ltrim(std::string &s);
 
 baseUnit::baseUnit()
@@ -51,21 +49,25 @@ heroUnit::heroUnit()
 
 void baseUnit::loadUnitFromStream(std::fstream &myfile, std::string &lineoutAttr)
 {
+	std::map<std::string,int *>::iterator itUnitDataMapI;
+	std::map<std::string,std::string *>::iterator itUnitDataMapS;
+	std::map<std::string,double *>::iterator itUnitDataMapD;
+	unsigned spos, epos;
+	int tmpI;
+	std::string lineoutValue;
+	double tempDouble;
+	int nextHeroPos;
     while (!myfile.fail())
     {
         if (lineoutAttr.find_first_of('"')!=std::string::npos)
         {
-            unsigned spos, epos;
-            int tmpI;
-            std::string lineoutValue;
             lineoutValue=lineoutAttr;
-            double tempDouble;
             spos=lineoutAttr.find_first_not_of('"');
             epos=lineoutAttr.find('"',spos);
             lineoutAttr=lineoutAttr.substr(spos,epos-(spos));
-            std::map<std::string,int*>::iterator itUnitDataMapI=unitDataMapI.begin();;
-            std::map<std::string,std::string*>::iterator itUnitDataMapS=unitDataMapS.begin();;
-            std::map<std::string,double*>::iterator itUnitDataMapD=unitDataMapD.begin();;
+            itUnitDataMapI=unitDataMapI.begin();
+            itUnitDataMapS=unitDataMapS.begin();
+            itUnitDataMapD=unitDataMapD.begin();
             if (lineoutValue.find('"',epos+1)!=std::string::npos)
             {
                 spos=lineoutValue.find('"');
@@ -94,14 +96,13 @@ void baseUnit::loadUnitFromStream(std::fstream &myfile, std::string &lineoutAttr
                     }
                 }
             }
-
         }
         std::getline(myfile,lineoutAttr);
         ltrim(lineoutAttr);
-        int nextHeroPos=lineoutAttr.find("npc_dota_hero_");
+        nextHeroPos=lineoutAttr.find("npc_dota_hero_");
         if (lineoutAttr.find("npc_dota_hero_")!=std::wstring::npos && nextHeroPos<=2)
         {
-		return;
+		break;
         }
     }
 return;

@@ -1,8 +1,8 @@
 /**
 Stats can't be less than 0. To avoid that, I save all stats that go lower than 0 to statReal. Any changes should be
-done by "set", "change" and "get" preferably:
+done with "set", "change" and "get":
 set - overrides stats, and is only supposed to be used by the start phase of analysis. Will not take numbers less than 0;
-change - Allows user to manipulate stats, increase or decrease it.
+change - Allows user to manipulate stats, increase or decrease it, by passing positive or negative values.
 get - Reads stat value(will return 0 if statReal is less than 0).
 
 How to use:
@@ -10,7 +10,7 @@ setSTR(8); - now we have 8 str stat.
 changeSTR(-20); - now we have 0 at str stat, and -12 at the statReal.
 changeSTR(40); - now we have 28 str stat, and 0 at the statReal.
 
-hero class is basically just a variable wearing dummy, thus should not cause any problems with calls
+Hero class is basically just a variable wearing dummy, thus should not cause any problems with calls
 to the "outside world". The only dependence is the existence of heroUnit class objects, since it needs
 basic stat data and stat growth data.
 */
@@ -22,8 +22,8 @@ extern double gamerule_ArmorPerAgi, gamerule_HPRegenPerStr, gamerule_MPRegenPerI
 
 extern DamageAnalysisFrame *Frame;
 
-extern heroUnit *heroTemp;
-extern heroUnit *heroAttTemp;
+heroUnit *heroTemp;
+heroUnit *heroAttTemp;
 
 unsigned hero::getSTR()
 {
@@ -129,7 +129,7 @@ void hero_Defender::recalcStat(StatTypes checkStat, double bonusStat)
     {
         int myTMPHP=maxHP;
         maxHP=maxHP+gamerule_HPPerStr*bonusStat;
-        HP=((double)HP/myTMPHP*maxHP);
+        HP=(double)HP/myTMPHP*maxHP;
         HPRegen=HPRegen+gamerule_HPRegenPerStr*bonusStat;
     }
     else if (checkStat==Agility)
@@ -140,7 +140,7 @@ void hero_Defender::recalcStat(StatTypes checkStat, double bonusStat)
     {
         int myTMPMP=maxMP;
         maxMP=maxMP+gamerule_MPPerInt*bonusStat;
-        MP=((double)MP/myTMPMP*maxMP);
+        MP=(double)MP/myTMPMP*maxMP;
         MPRegen=MPRegen+gamerule_MPRegenPerInt*bonusStat;
     }
 return;

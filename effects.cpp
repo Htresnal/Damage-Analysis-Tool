@@ -1,4 +1,33 @@
-/*
+/* ENG
+Init() should contain such functions, that would be enabled once - just before
+initializing Continue() cycle; functions that affect basic parameters(like
+adding bonus armor, stats, attack speed, global auras and etc.)
+Init() should NOT contain anything, that has nothing to do with the direct timeline
+of the emulation, since instance of Continue() would be enabled just after the Init().
+Damage is evaluated, by summing the existing damage numbers to the variables:
+InDamagePerCycle, InDamageMagicPerCycle, InDamageNoReductPerCycle.
+Changing health/mana directly is not advised.
+In the Init(), its better to refresh the existing necessary variables.
+In Continue() cycle, there are effects, that are working in a continuous manner,
+e.g.: minus armor per hit, or minus to stats per hit.
+if the effect uses parameters, that are changed with every step in Continue(),
+such as attack speed, max health and etc., its necessary to reevaluate
+hero-class variables they are based on.
+Effect ranks:
+maxRanks=12; // ___ Maximal rank level.
+minRanks=-5; // ___ Minimal rank level. Effects with levels lesser than -5
+would be applied in the first place, and maximal rank would be applied the last place.
+For example, critical hit and mana shield both should work before any other damages and
+resistances are taking place.
+Every damaging and defending effects with rank lesser than 0 could influence each other,
+since they're using common variables for damage evaluation, boosting the next with the previous.
+Rank list:
+-5 - -1 - Critical hit, Mana shield, Stat steal
+0 - Damage block.
+10 - 12 - Damage amplify, Damage reduction and Heartstopper aura.
+*/
+
+/* RUS
 В Init() должны помещаться функции, которые включаются один раз -
 - перед инициализацией цикла Continue(), влияющие на базовые
 параметры(например, добавление количества брони, статов,
@@ -24,14 +53,11 @@ minRanks=-5; // ___ Минимальный уровень ранков. Эффе
 Все повреждающие и защищающие эффекты с ранком ниже 0 могут взаимовлиять,
 т.к. используют общую переменную для рассчётов повреждения, усиляя
 следующий предыдущим.
-Список ранков:
--5 - -1 - Critical hit, Mana shield, Stat steal
-0 - Damage block.
-10 - 12 - Damage amplify, Damage reduction and Heartstopper aura.
 */
 
 //Статы не имеют силы. Необходимо иметь дело со статами через конечные, подчиненные им
 //переменные.
+//Stats have no power. Its necessary to change stats through the end-point, slave functions.
 
 #include "effects.h"
 #include "AnalysisLogs.h"
@@ -47,7 +73,6 @@ std::vector<double> magicResistanceBuffer;
 extern double ARReduct, InDamageBase, InDamagePerCycleCrit, InDamage, InDamageRaw, InDamageMagic, InDamageNoReduct, aps, singleAttackTime, currAps, currSingleAttackTime, InDamagePerCycle, InDamageMagicPerCycle, InDamageNoReductPerCycle;
 extern int DoDoubleHit, DefendercurrMaxHP;
 extern unsigned WhiteDmg;
-extern void recalculateAttackSpeed();
 
 extern AnalysisLogs *Frame1;
 
@@ -155,6 +180,27 @@ basic_effect* basic_effect::getnewCopy()
 return new basic_effect(*this);
 // How to use: basic_effect *tmpEff = &(baseEff->getnewCopy());
 }
+
+bool operator>(const basic_effect &e1, const basic_effect &e2)
+{
+return e1.initRank>e2.initRank;
+}
+
+bool operator>=(const basic_effect &e1, const basic_effect &e2)
+{
+return e1.initRank>=e2.initRank;
+}
+
+bool operator<(const basic_effect &e1, const basic_effect &e2)
+{
+return e1.initRank<e2.initRank;
+}
+
+bool operator<=(const basic_effect &e1, const basic_effect &e2)
+{
+return e1.initRank<=e2.initRank;
+}
+
 //////////////////////////////PREPARATION LINE///////////////////////////////
 // effect_stats_bonus_defender
 effect_stats_bonus_defender::effect_stats_bonus_defender()
@@ -764,7 +810,7 @@ void effect_stats_bonus_attacker::Init()
     else if (mainStat==Agility)
     {
         Attacker.changeAGI(statbonus);
-        Frame1->recalculateAttackSpeed();// Recalculate agi-involved speed changes.
+        Frame1->recalculateAttackSpeed(); // Recalculate agi-involved speed changes.
         if (Attacker.mainStat==Agility)
         {
             WhiteDmg=WhiteDmg+(statbonus);

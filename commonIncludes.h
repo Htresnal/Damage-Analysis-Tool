@@ -17,6 +17,7 @@
 #include <wctype.h>
 #include <cstdio>
 #include <ios>
+#include <queue>
 
 #include <io.h>
 #include <fcntl.h>
@@ -50,6 +51,8 @@
 #include <wx/gdicmn.h>
 #include <math.h>
 #include <list>
+
+#define HERO_COUNT 150
 
 enum DamageEnum
 {

@@ -8,6 +8,9 @@ double gamerule_ArmorPerAgi, gamerule_HPRegenPerStr, gamerule_MPRegenPerInt;
 extern std::string &ltrim(std::string &s);
 bool exists_test3 (const std::string& name);
 
+void spawnGameSettingsCell(wxGrid *, int &, const char* );
+void spawnGameSettingsCell(wxGrid *, double &, const char* );
+
 //(*InternalHeaders(GameSettings)
 #include <wx/intl.h>
 #include <wx/string.h>
@@ -61,90 +64,20 @@ GameSettings::GameSettings(wxWindow* parent,wxWindowID id,const wxPoint& pos,con
 
 	wxGridCellEditor *tmpEditor;
 	cellDataObject *tmpDataObj;
-    Grid1->AppendRows(1,true);
 
-	tmpEditor=new wxGridCellNumberEditor;
-    tmpDataObj=new cellDataObject(gamerule_StartHP);
-    tmpDataObj->type=_("I");
-    tmpEditor->SetClientData(&(*tmpDataObj));
-    Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Starting health");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
-    Grid1->SetCellValue(Grid1->GetNumberRows()-1,0,wxString::Format(wxT("%i"),gamerule_StartHP));
-
-    Grid1->AppendRows(1,true);
-
-	tmpEditor=new wxGridCellNumberEditor;
-    tmpDataObj=new cellDataObject(gamerule_StartMP);
-    tmpDataObj->type=_("I");
-    tmpEditor->SetClientData(&(*tmpDataObj));
-    Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Starting mana");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
-    Grid1->SetCellValue(Grid1->GetNumberRows()-1,0,wxString::Format(wxT("%i"),gamerule_StartMP));
-
-	Grid1->AppendRows(1,true);
-
-	tmpEditor=new wxGridCellNumberEditor;
-    tmpDataObj=new cellDataObject(gamerule_StartIAS);
-    tmpDataObj->type=_("I");
-    tmpEditor->SetClientData(&(*tmpDataObj));
-    Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Starting IAS");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
-    Grid1->SetCellValue(Grid1->GetNumberRows()-1,0,wxString::Format(wxT("%i"),gamerule_StartIAS));
-
+	spawnGameSettingsCell(Grid1, gamerule_StartHP, "Starting health");
+	spawnGameSettingsCell(Grid1, gamerule_StartMP, "Starting mana");
+	spawnGameSettingsCell(Grid1, gamerule_StartIAS, "Starting IAS");
 	Grid1->AppendRows(1,true);
 
 	Grid1->SetReadOnly(Grid1->GetNumberRows()-1,0,true);
 	Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1," ");
 
-    Grid1->AppendRows(1,true);
-
-    tmpEditor=new wxGridCellNumberEditor;
-    tmpDataObj=new cellDataObject(gamerule_HPPerStr);
-    tmpDataObj->type=_("I");
-    tmpEditor->SetClientData(&(*tmpDataObj));
-    Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Health per STR");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
-    Grid1->SetCellValue(Grid1->GetNumberRows()-1,0,wxString::Format(wxT("%i"),gamerule_HPPerStr));
-
-    Grid1->AppendRows(1,true);
-
-    tmpEditor=new wxGridCellFloatEditor;
-    tmpDataObj=new cellDataObject(gamerule_HPRegenPerStr);
-    tmpDataObj->type=_("D");
-    tmpEditor->SetClientData(&(*tmpDataObj));
-    Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Health regen per STR");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
-    Grid1->SetCellValue(Grid1->GetNumberRows()-1,0,wxString::FromDouble(gamerule_HPRegenPerStr,2));
-
-    Grid1->AppendRows(1,true);
-
-    tmpEditor=new wxGridCellFloatEditor;
-    tmpDataObj=new cellDataObject(gamerule_ArmorPerAgi);
-    tmpDataObj->type=_("D");
-    tmpEditor->SetClientData(&(*tmpDataObj));
-    Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Armor per AGI");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
-    Grid1->SetCellValue(Grid1->GetNumberRows()-1,0,wxString::FromDouble(gamerule_ArmorPerAgi,2));
-
-    Grid1->AppendRows(1,true);
-
-    tmpEditor=new wxGridCellNumberEditor;
-    tmpDataObj=new cellDataObject(gamerule_MPPerInt);
-    tmpDataObj->type=_("I");
-    tmpEditor->SetClientData(&(*tmpDataObj));
-    Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Mana per INT");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
-    Grid1->SetCellValue(Grid1->GetNumberRows()-1,0,wxString::Format(wxT("%i"),gamerule_MPPerInt));
-
-    Grid1->AppendRows(1,true);
-
-    tmpEditor=new wxGridCellFloatEditor;
-    tmpDataObj=new cellDataObject(gamerule_MPRegenPerInt);
-    tmpDataObj->type=_("D");
-    tmpEditor->SetClientData(&(*tmpDataObj));
-    Grid1->SetRowLabelValue(Grid1->GetNumberRows()-1,"Mana regen per INT");
-    Grid1->SetCellEditor(Grid1->GetNumberRows()-1,0,tmpEditor);
-    Grid1->SetCellValue(Grid1->GetNumberRows()-1,0,wxString::FromDouble(gamerule_MPRegenPerInt,2));
+    spawnGameSettingsCell(Grid1, gamerule_HPPerStr, "Health per STR");
+    spawnGameSettingsCell(Grid1, gamerule_HPRegenPerStr, "Health regen per STR");
+    spawnGameSettingsCell(Grid1, gamerule_ArmorPerAgi, "Armor per AGI");
+    spawnGameSettingsCell(Grid1, gamerule_MPPerInt, "Mana per INT");
+    spawnGameSettingsCell(Grid1, gamerule_MPRegenPerInt, "Mana regen per INT");
 }
 
 GameSettings::~GameSettings()
@@ -153,7 +86,7 @@ GameSettings::~GameSettings()
 	//*)
 }
 
-void GameSettings::OnSettingsGrid1CellChange(wxGridEvent& event)
+void GameSettings::OnSettingsGrid1CellChange(wxGridEvent &event)
 {
     wxGridCellEditor *tmpEditor=Grid1->GetCellEditor(event.GetRow(),event.GetCol());
     tmpEditor->DecRef();
@@ -173,19 +106,19 @@ void GameSettings::OnSettingsGrid1CellChange(wxGridEvent& event)
     SaveChangestoFile(gameRulePath);
 }
 
-void GameSettings::OnClose(wxCloseEvent& event)
+void GameSettings::OnClose(wxCloseEvent &event)
 {
     Hide();
 }
 
-std::map<std::string,double*>gamerulesDataMapD=
+std::map<std::string,double *>gamerulesDataMapD=
     {
     {"gamerule_ArmorPerAgi",&gamerule_ArmorPerAgi},
     {"gamerule_HPRegenPerStr", &gamerule_HPRegenPerStr},
     {"gamerule_MPRegenPerInt", &gamerule_MPRegenPerInt}
     };
 
-std::map<std::string,int*>gamerulesDataMapI=
+std::map<std::string,int *>gamerulesDataMapI=
     {
     {"gamerule_StartIAS", &gamerule_StartIAS},
     {"gamerule_HPPerStr", &gamerule_HPPerStr},
@@ -198,7 +131,7 @@ void GetGameRules()
 {
     if (!exists_test3(gameRulePath))
     {
-        wxMessageBox(_("[FILE][NOT FOUND]: DamageAnalysis_settings.txt not found. Creating new default config. Applying default settings."),_("Failed to find file"));
+        wxMessageBox(_("[FILE][NOT FOUND]: DamageAnalysis_settings.txt not found. Creating new default config. Applying default settings."),_("Failed to find a file"));
         ApplyDefaultRules();
         SaveChangestoFile(gameRulePath);
         return;
@@ -207,7 +140,7 @@ void GetGameRules()
     std::fstream myfile(gameRulePath);
     if (!myfile.good())
     {
-        wxMessageBox(_("[FILE][CORRUPT]: DamageAnalysis_settings.txt failed to load. Please, remove to acquire default config, or replace with correct one. Applying default settings."),_("Failed to load file"));
+        wxMessageBox(_("[FILE][CORRUPT]: DamageAnalysis_settings.txt failed to load. Please, remove to acquire default config, or replace with correct one. Applying default settings."),_("Failed to load a file"));
         ApplyDefaultRules();
         return;
     }
@@ -251,12 +184,12 @@ void SaveChangestoFile(const std::string path)
     std::ofstream myfile(path);
     for(std::map<std::string, int *>::const_iterator it = gamerulesDataMapI.begin(); it != gamerulesDataMapI.end(); it++)
     {
-        myfile<<"\""<<it->first<<"\" \""<<*(it->second)<<"\""<<std::endl;
+        myfile<<"\""<<it->first<<"\" \""<<*(it->second)<<"\""<<'\n';
     }
-    myfile<<std::endl;
+    myfile<<'\n';
     for(std::map<std::string, double *>::const_iterator it = gamerulesDataMapD.begin(); it != gamerulesDataMapD.end(); it++)
     {
-        myfile<<"\""<<it->first<<"\" \""<<*(it->second)<<"\""<<std::endl;
+        myfile<<"\""<<it->first<<"\" \""<<*(it->second)<<"\""<<'\n';
     }
     return;
 }
@@ -272,4 +205,30 @@ void ApplyDefaultRules()
     gamerule_HPRegenPerStr=0.03;
     gamerule_MPRegenPerInt=0.04;
     return;
+}
+
+void spawnGameSettingsCell(wxGrid *grid, int &cellData, const char* cellText)
+{
+  grid->AppendRows(1,true);
+
+  wxGridCellEditor *tmpEditor=new wxGridCellNumberEditor;
+  cellDataObject *tmpDataObj=new cellDataObject(cellData);
+  tmpDataObj->type=_("I");
+  tmpEditor->SetClientData(&(*tmpDataObj));
+  grid->SetRowLabelValue(grid->GetNumberRows()-1,cellText);
+  grid->SetCellEditor(grid->GetNumberRows()-1,0,tmpEditor);
+  grid->SetCellValue(grid->GetNumberRows()-1,0,wxString::Format(wxT("%i"),cellData));
+}
+
+void spawnGameSettingsCell(wxGrid *grid, double &cellData, const char* cellText)
+{
+  grid->AppendRows(1,true);
+
+  wxGridCellEditor *tmpEditor=new wxGridCellFloatEditor;
+  cellDataObject *tmpDataObj=new cellDataObject(cellData);
+  tmpDataObj->type=_("D");
+  tmpEditor->SetClientData(&(*tmpDataObj));
+  grid->SetRowLabelValue(grid->GetNumberRows()-1,cellText);
+  grid->SetCellEditor(grid->GetNumberRows()-1,0,tmpEditor);
+  grid->SetCellValue(grid->GetNumberRows()-1,0,wxString::FromDouble(cellData,2));
 }
