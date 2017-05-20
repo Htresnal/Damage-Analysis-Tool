@@ -28,4 +28,7 @@ wxbase310u_propgrid_gcc_custom.dll
 wxbase310u_ribbon_gcc_custom.dll
 wxbase310u_richtext_gcc_custom.dll
 
+DamageAnalysis.exe
+myIcon.ico
+
 npc_units.txt
